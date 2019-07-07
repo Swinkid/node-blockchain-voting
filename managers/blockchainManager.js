@@ -16,7 +16,7 @@ const BlockchainManager = (io, app) => {
 	if((MASTER_HOST && MASTER_PORT)){
 
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
-			const node = `http://${MASTER_HOST}:${MASTER_PORT}?p=${PORT}&h=${HOST}`;
+			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
 			const socketNode = socketListeners(client(node), blockchain);
 
 			blockchain.addNode(new Node(socketNode, MASTER_HOST, MASTER_PORT));
@@ -32,15 +32,15 @@ const BlockchainManager = (io, app) => {
 
 	app.post('/nodes', (req, res) => {
 		const { host, port } = req.body;
-		let node = `http://${host}:${port}`;
+		let node = `http://${host}:${port}?cbaddr=${HOST}:${PORT}`;
 
 		if(!nodeExists(blockchain, host, port)) {
-			let socketNode = socketListeners(client(node + `?p=${port}&h=${host}`), blockchain);
-
-			blockchain.addNode(new Node(socketNode, host, port));
-
+			blockchain.addNode(new Node(socketListeners(client(node), blockchain), host, port));
 			console.info(`Added node ${node}`);
-			res.json({ status: 'Added node' }).end();
+
+			res.json({
+				status: 'Added node'
+			});
 		} else {
 			res.json({
 				status: 'Rejected Node'
@@ -52,7 +52,9 @@ const BlockchainManager = (io, app) => {
 	io.on('connection', (socket) => {
 		//TODO: Add/Remove as connect and disconnect
 		console.info(`Blockchain Node connected, ID: ${socket.id}`);
-		console.info(`Blockchain Node Info: ${socket.handshake.query.h}:${socket.handshake.query.p}`);
+		console.info(`Blockchain Node Info: ${socket.handshake.query.cbaddr}`);
+
+		let bc = blockchain;
 
 //		if(!nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
 //			let host = socket.handshake.query.h;
@@ -69,15 +71,14 @@ const BlockchainManager = (io, app) => {
 			console.log(`Blockchain Node disconnected, ID: ${socket.id}`);
 
 
-			if(nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
-				blockchain.setNodes(blockchain.getNodes().splice(blockchain.getNodeIndex(socket.handshake.query.h, socket.handshake.query.p), 1));
-			}
+			//if(nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
+			//	blockchain.setNodes(blockchain.getNodes().splice(blockchain.getNodeIndex(socket.handshake.query.h, socket.handshake.query.p), 1));
+			//}
 
 		});
 	});
 
-	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?p=${PORT}&h=${HOST}`)), HOST, PORT));
-	nodeExists(blockchain);
+	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`), blockchain), HOST, PORT));
 };
 
 function nodeExists(blockchain, host, port){
