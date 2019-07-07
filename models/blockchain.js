@@ -38,8 +38,23 @@ class Blockchain {
 		});
 	}
 
+	getNodeIndex(host, port){
+		let index = 0;
+		this.nodes.forEach(function (node) {
+			if((node.host === host) && (node.port === port)){
+				return index;
+			}
+
+			index++;
+		});
+	}
+
 	getNodes(){
 		return this.nodes;
+	}
+
+	setNodes(nodes){
+		this.nodes = nodes;
 	}
 
 }

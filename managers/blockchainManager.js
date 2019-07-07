@@ -1,5 +1,6 @@
 const client = require('socket.io-client');
 const axios = require('axios');
+const _ = require('lodash');
 
 const Node = require('../models/node');
 var Blockchain = require('../models/blockchain');
@@ -51,16 +52,25 @@ const BlockchainManager = (io, app) => {
 	io.on('connection', (socket) => {
 		//TODO: Add/Remove as connect and disconnect
 		console.info(`Blockchain Node connected, ID: ${socket.id}`);
+		console.info(`Blockchain Node Info: ${socket.handshake.query.h}:${socket.handshake.query.p}`);
 
-		if(!nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
-			//ADD
-		}
+//		if(!nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
+//			let host = socket.handshake.query.h;
+//			let port = socket.handshake.query.p;
+//			let node = `http://${host}:${port}`;
+//
+//			let socketNode = socketListeners(client(node + `?p=${port}&h=${host}`), blockchain);
+//			blockchain.addNode(new Node(socketNode, host, port));
+//
+//			console.log(`Added node ${node} to chain`);
+//		}
 
 		socket.on('disconnect', () => {
 			console.log(`Blockchain Node disconnected, ID: ${socket.id}`);
 
+
 			if(nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
-				//REMOVE
+				blockchain.setNodes(blockchain.getNodes().splice(blockchain.getNodeIndex(socket.handshake.query.h, socket.handshake.query.p), 1));
 			}
 
 		});
