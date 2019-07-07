@@ -26,6 +26,22 @@ class Blockchain {
 		this.nodes.push(node);
 	}
 
+	removeNode(host, port){
+
+	}
+
+	getNode(host, port){
+		this.nodes.forEach(function (node) {
+			if(node.host === host && node.port === port){
+				return node;
+			}
+		});
+	}
+
+	getNodes(){
+		return this.nodes;
+	}
+
 }
 
 module.exports = Blockchain;
