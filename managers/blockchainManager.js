@@ -26,13 +26,56 @@ const BlockchainManager = (io, app) => {
 			axios.post(`http://${MASTER_HOST}:${MASTER_PORT}/nodes`, {
 				port: PORT,
 				host: HOST
+			}).then((result) => {
+
+				axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/nodes`).then((result) => {
+
+					var existingNodes = result.data;
+
+					for(var i = 0; i < existingNodes.length; i++){
+						let n = existingNodes[i].host;
+						let p = existingNodes[i].port;
+
+						let node = `http://${n}:${p}`;
+
+						if(!nodeExists(blockchain, n, p)) {
+							blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${n}:${p}`, {
+								'reconnection' : false
+							}), blockchain), n, p));
+
+							axios.post(`http://${n}:${p}/nodes`, {
+								port: PORT,
+								host: HOST
+							}).catch(() => {});
+
+							console.info(`Added node ${node}`);
+						}
+					}
+
+				}).catch((error) => {
+					console.log(error);
+				});
+
 			}).catch(function (error) {
 				process.exit();
 			});
-
 		}
 
 	}
+
+	app.get('/nodes', (req, res) => {
+		var nodes = [];
+
+		for(var i = 0; i < blockchain.getNodes().length; i++){
+			let n = {};
+			n.host = blockchain.getNodes()[i].host;
+			n.port = blockchain.getNodes()[i].port;
+
+			nodes.push(n);
+		}
+
+		return res.json(nodes);
+	});
 
 	app.post('/nodes', (req, res) => {
 		const { host, port } = req.body;
@@ -47,19 +90,17 @@ const BlockchainManager = (io, app) => {
 
 			res.json({
 				status: 'Added node'
-			});
+			}).end();
 		} else {
-			res.status(500).json({
+			res.json({
 				status: 'Rejected Node'
-			});
+			}).end();
 		}
 
 	});
 
 	io.on('connection', (socket) => {
-		//TODO: Add/Remove as connect and disconnect
 		console.info(`Blockchain Node connected, ID: ${socket.id}`);
-		console.info(`Blockchain Node Info: ${socket.handshake.query.cbaddr}`);
 
 		socket.on('disconnect', () => {
 			console.log(`Blockchain Node disconnected, ID: ${socket.id}`);
@@ -68,9 +109,7 @@ const BlockchainManager = (io, app) => {
 			var port = String(socket.handshake.query.cbaddr).split(":")[1];
 
 			if(nodeExists(blockchain, host, port)){
-				console.info(`disconnecting ${socket.id}`);
 				blockchain.removeNode(host, port);
-				console.log(`Removed ${socket.id}`);
 			}
 
 		});
