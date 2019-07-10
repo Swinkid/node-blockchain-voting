@@ -27,7 +27,11 @@ class Blockchain {
 	}
 
 	removeNode(host, port){
-
+		for(var i = 0; i < this.nodes.length; i++){
+			if(this.nodes[i].host === host  && this.nodes[i].port === port){
+				this.nodes.splice(i, 1);
+			}
+		}
 	}
 
 	getNode(host, port){

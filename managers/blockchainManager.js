@@ -24,6 +24,8 @@ const BlockchainManager = (io, app) => {
 			axios.post(`http://${MASTER_HOST}:${MASTER_PORT}/nodes`, {
 				port: PORT,
 				host: HOST
+			}).catch(function (error) {
+				process.exit();
 			});
 
 		}
@@ -42,7 +44,7 @@ const BlockchainManager = (io, app) => {
 				status: 'Added node'
 			});
 		} else {
-			res.json({
+			res.status(500).json({
 				status: 'Rejected Node'
 			});
 		}
@@ -53,8 +55,6 @@ const BlockchainManager = (io, app) => {
 		//TODO: Add/Remove as connect and disconnect
 		console.info(`Blockchain Node connected, ID: ${socket.id}`);
 		console.info(`Blockchain Node Info: ${socket.handshake.query.cbaddr}`);
-
-		let bc = blockchain;
 
 //		if(!nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
 //			let host = socket.handshake.query.h;
@@ -70,6 +70,14 @@ const BlockchainManager = (io, app) => {
 		socket.on('disconnect', () => {
 			console.log(`Blockchain Node disconnected, ID: ${socket.id}`);
 
+			var host = String(socket.handshake.query.cbaddr).split(":")[0];
+			var port = String(socket.handshake.query.cbaddr).split(":")[1];
+
+			if(nodeExists(blockchain, host, port)){
+				console.info(`disconnecting ${socket.id}`);
+				blockchain.removeNode(host, port);
+				console.log(`Removed ${socket.id}`);
+			}
 
 			//if(nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
 			//	blockchain.setNodes(blockchain.getNodes().splice(blockchain.getNodeIndex(socket.handshake.query.h, socket.handshake.query.p), 1));
@@ -84,13 +92,11 @@ const BlockchainManager = (io, app) => {
 function nodeExists(blockchain, host, port){
 	let nodes = blockchain.getNodes();
 
-	nodes.forEach(function (node) {
-		if(node.host === host && node.port === port){
+	for(let i = 0; i < nodes.length; i++){
+		if(nodes[i].host === host && nodes[i].port === port){
 			return true;
 		}
-	});
-
-	return false;
+	}
 }
 
 module.exports = BlockchainManager;
