@@ -17,7 +17,9 @@ const BlockchainManager = (io, app) => {
 
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
 			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
-			const socketNode = socketListeners(client(node), blockchain);
+			const socketNode = socketListeners(client(node, {
+				'reconnection' : false
+			}), blockchain);
 
 			blockchain.addNode(new Node(socketNode, MASTER_HOST, MASTER_PORT));
 
@@ -37,7 +39,10 @@ const BlockchainManager = (io, app) => {
 		let node = `http://${host}:${port}`;
 
 		if(!nodeExists(blockchain, host, port)) {
-			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`), blockchain), host, port));
+			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`, {
+				'reconnection' : false
+			}), blockchain), host, port));
+
 			console.info(`Added node ${node}`);
 
 			res.json({
@@ -56,17 +61,6 @@ const BlockchainManager = (io, app) => {
 		console.info(`Blockchain Node connected, ID: ${socket.id}`);
 		console.info(`Blockchain Node Info: ${socket.handshake.query.cbaddr}`);
 
-//		if(!nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
-//			let host = socket.handshake.query.h;
-//			let port = socket.handshake.query.p;
-//			let node = `http://${host}:${port}`;
-//
-//			let socketNode = socketListeners(client(node + `?p=${port}&h=${host}`), blockchain);
-//			blockchain.addNode(new Node(socketNode, host, port));
-//
-//			console.log(`Added node ${node} to chain`);
-//		}
-
 		socket.on('disconnect', () => {
 			console.log(`Blockchain Node disconnected, ID: ${socket.id}`);
 
@@ -79,14 +73,12 @@ const BlockchainManager = (io, app) => {
 				console.log(`Removed ${socket.id}`);
 			}
 
-			//if(nodeExists(blockchain, socket.handshake.query.h, socket.handshake.query.p)){
-			//	blockchain.setNodes(blockchain.getNodes().splice(blockchain.getNodeIndex(socket.handshake.query.h, socket.handshake.query.p), 1));
-			//}
-
 		});
 	});
 
-	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`), blockchain), HOST, PORT));
+	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`, {
+		'reconnection' : false
+	}), blockchain), HOST, PORT));
 };
 
 function nodeExists(blockchain, host, port){
