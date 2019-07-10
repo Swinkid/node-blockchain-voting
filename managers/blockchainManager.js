@@ -32,10 +32,10 @@ const BlockchainManager = (io, app) => {
 
 	app.post('/nodes', (req, res) => {
 		const { host, port } = req.body;
-		let node = `http://${host}:${port}?cbaddr=${HOST}:${PORT}`;
+		let node = `http://${host}:${port}`;
 
 		if(!nodeExists(blockchain, host, port)) {
-			blockchain.addNode(new Node(socketListeners(client(node), blockchain), host, port));
+			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`), blockchain), host, port));
 			console.info(`Added node ${node}`);
 
 			res.json({
