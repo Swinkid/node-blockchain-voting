@@ -3,11 +3,18 @@
 
 class Blockchain {
 
-	constructor(blockchain, socket){
-		this.blockchain = blockchain || []; //TODO add genesis block?
-		this.transactionPool = [];
+	constructor(socket){
 		this.nodes = [];
 		this.socket = socket;
+	}
+
+	initialize(blockchain){
+		this.blockchain = blockchain || []; //TODO add genesis block?
+		this.transactionPool = [];
+	}
+
+	isInitialized(){
+		return !!this.blockchain;
 	}
 
 	addBlock(block){

@@ -11,10 +11,15 @@ const socketActions = require('../constants');
 const { PORT, HOST, MASTER_HOST, MASTER_PORT } = process.env;
 
 const BlockchainManager = (io, app) => {
-	const blockchain = new Blockchain(null, io);
+
+	//Setup Blockchain (Don't Initialize yet..)
+	const blockchain = new Blockchain(io);
+
+	app.test = "meow";
+
+	const identityManager = require('../managers/identityManager')(app, blockchain);
 
 	if((MASTER_HOST && MASTER_PORT)){
-
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
 			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
 			const socketNode = socketListeners(client(node, {
@@ -63,6 +68,10 @@ const BlockchainManager = (io, app) => {
 
 	}
 
+	app.get('/', function(req, res, next) {
+		res.render('index', { title: 'Express' });
+	});
+
 	app.get('/nodes', (req, res) => {
 		var nodes = [];
 
@@ -75,6 +84,10 @@ const BlockchainManager = (io, app) => {
 		}
 
 		return res.json(nodes);
+	});
+
+	app.get('/blockchain/initialize', (req, res) => {
+		console.log(blockchain.isInitialized());
 	});
 
 	app.post('/nodes', (req, res) => {

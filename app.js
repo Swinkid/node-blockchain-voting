@@ -6,8 +6,6 @@ const logger = require('morgan');
 const socket_io = require('socket.io');
 const client = require('socket.io-client');
 
-var indexRouter = require('./routes/index');
-
 var app = express();
 var io = socket_io();
 app.io = io;
@@ -23,8 +21,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const blockchainManager = require('./managers/blockchainManager')(io, app);
-
-app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
