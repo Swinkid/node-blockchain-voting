@@ -18,6 +18,7 @@ const BlockchainManager = (io, app) => {
 	app.test = "meow";
 
 	const identityManager = require('../managers/identityManager')(app, blockchain);
+	const setupRoute = require('../routes/setup')(app, blockchain);
 
 	if((MASTER_HOST && MASTER_PORT)){
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){

@@ -36,9 +36,6 @@ function initializeKeys(){
 		privateKey = new ECKey(privatePem, 'pem');
 		publicKey = new ECKey(publicPem, 'pem');
 
-		console.log(privateKey.toString('pem'));
-		console.log(publicKey.toString('pem'));
-
 	} else {
 		let randomKey = ECKey.createECKey('P-256');
 
