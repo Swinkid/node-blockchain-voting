@@ -64,3 +64,5 @@ typings/
 .fusebox/
 .dynamodb/
 /.idea/
+/public.pem
+/private.pem
