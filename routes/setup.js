@@ -31,6 +31,8 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				identityManager.saveKey(randomKey.asPublicECKey().toString('pem'), `node_keys/${row.Region}_pub.pem`);
 				identityManager.saveKey(randomKey.toString('pem'), `node_keys/${row.Region}_priv.pem`);
 
+				//TODO: Add to transaction, push to block, calc hash
+
 				node++;
 			});
 
@@ -44,6 +46,8 @@ const SetupRoute = (app, blockchain, identityManager) => {
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
 		console.log(req)
 
+		//TODO: Save keys locally
+		//TODO: Fetch latest chain from master
 
 		res.json({status: 'OK'});
 	});
