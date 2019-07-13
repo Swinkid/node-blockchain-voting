@@ -10,7 +10,7 @@ class IdentityManager {
 		this._publicKey = null;
 		this._privateKey = null;
 
-		this.initializeKeys();
+		//this.initializeKeys();
 	}
 
 	initializeKeys(){

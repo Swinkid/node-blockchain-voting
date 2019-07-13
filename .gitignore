@@ -66,3 +66,4 @@ typings/
 /.idea/
 /public.pem
 /private.pem
+node_keys/*.pem
