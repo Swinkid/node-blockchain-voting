@@ -41,12 +41,11 @@ const SetupRoute = (app, blockchain, identityManager) => {
 		res.render('setup/client');
 	});
 
-	app.post('/setup/master', function(req, res, next){
-		//TODO Handle master setup
-	});
+	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
+		console.log(req)
 
-	app.post('/setup/client', function (req, res, next) {
-		//TODO: Handle key upload
+
+		res.json({status: 'OK'});
 	});
 
 	app.get('/setup', function (req, res, next) {

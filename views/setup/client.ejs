@@ -5,6 +5,11 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<h1>Setup Client</h1>
+<h1>Setup Master</h1>
+<form action="/setup/client" method="post" enctype="multipart/form-data">
+    Public Key: <input type="file" name="file" id="file">
+    Private Key: <input type="file" name="file" id="file">
+    <input type="submit" class="" value="Upload" tabindex="1">
+</form>
 </body>
 </html>
