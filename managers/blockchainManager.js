@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const Node = require('../models/node');
 var Blockchain = require('../models/blockchain');
+const IdentityManger = require('../managers/identityManager');
 
 const socketListeners = require('../socketListeners');
 const socketActions = require('../constants');
@@ -17,7 +18,7 @@ const BlockchainManager = (io, app) => {
 
 	app.test = "meow";
 
-	const identityManager = require('../managers/identityManager')(app, blockchain);
+	const identityManager = new IdentityManger();
 	const setupRoute = require('../routes/setup')(app, blockchain);
 
 	if((MASTER_HOST && MASTER_PORT)){

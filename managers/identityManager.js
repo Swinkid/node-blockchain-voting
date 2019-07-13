@@ -1,77 +1,80 @@
-const ECKey = require('ec-key');
 const fs = require('fs');
+const ECKey = require('ec-key');
 
 const PUBLIC_KEY = "./public.pem";
 const PRIVATE_KEY = "./private.pem";
 
-let privateKey = null;
-let publicKey = null;
+class IdentityManager {
 
-/**
- *
- * @param app
- * @param blockchain
- * @constructor
- */
-const IdentityManager = (app, blockchain) => {
+	constructor(){
+		this._publicKey = null;
+		this._privateKey = null;
 
-	//TODO
-//	console.log(blockchain.isInitialized());
-//	blockchain.initialize(null);
-//	console.log(blockchain.isInitialized());
-
-	initializeKeys();
-
-
-};
-
-/**
- *
- */
-function initializeKeys(){
-	if(keysExist()){
-		let privatePem = fs.readFileSync(PRIVATE_KEY);
-		let publicPem = fs.readFileSync(PUBLIC_KEY);
-
-		privateKey = new ECKey(privatePem, 'pem');
-		publicKey = new ECKey(publicPem, 'pem');
-
-	} else {
-		let randomKey = ECKey.createECKey('P-256');
-
-		publicKey = randomKey.asPublicECKey();
-		privateKey = randomKey;
-
-		saveKey(publicKey.toString('pem'), PUBLIC_KEY);
-		saveKey(privateKey.toString('pem'), PRIVATE_KEY)
+		this.initializeKeys();
 	}
-}
 
-/**
- * Checks to see if the node has a key pair already saved.
- * @returns {boolean}
- */
-function keysExist(){
-	try {
-		return fs.existsSync(PRIVATE_KEY) && fs.existsSync(PUBLIC_KEY);
-	} catch (e) {
-		return false;
+	initializeKeys(){
+		if(this.keysExist()){
+			let privatePem = fs.readFileSync(PRIVATE_KEY);
+			let publicPem = fs.readFileSync(PUBLIC_KEY);
+
+			this._privateKey = new ECKey(privatePem, 'pem');
+			this._publicKey = new ECKey(publicPem, 'pem');
+
+		} else {
+			let randomKey = ECKey.createECKey('P-256');
+
+			this._publicKey = randomKey.asPublicECKey();
+			this._privateKey = randomKey;
+
+			this.saveKey(this._publicKey.toString('pem'), PUBLIC_KEY);
+			this.saveKey(this._privateKey.toString('pem'), PRIVATE_KEY)
+		}
 	}
-}
 
-/**
- *
- * @param key
- * @param filename
- */
-function saveKey(key, filename){
-	fs.writeFileSync(filename, key, function (error) {
-		if(error){
-			console.error(`Problem saving ${filename}`);
+	/**
+	 * Checks to see if the node has a key pair already saved.
+	 * @returns {boolean}
+	 */
+	keysExist(){
+		try {
+			return fs.existsSync(PRIVATE_KEY) && fs.existsSync(PUBLIC_KEY);
+		} catch (e) {
+			return false;
+		}
+	}
+
+	/**
+	 *
+	 * @param key
+	 * @param filename
+	 */
+	saveKey(key, filename){
+		fs.writeFileSync(filename, key, function (error) {
+			if(error){
+				console.error(`Problem saving ${filename}`);
+			}
+
+			console.log(`Key ${filename} saved`);
+		});
+	}
+
+	/**
+	 *
+	 * @param type
+	 * @returns {null|*}
+	 */
+	getKey(type){
+		if(type === "public"){
+			return this._publicKey;
 		}
 
-		console.log(`Key ${filename} saved`);
-	});
+		if(type === "private"){
+			return this._privateKey;
+		}
+
+		return null;
+	}
 }
 
 module.exports = IdentityManager;
