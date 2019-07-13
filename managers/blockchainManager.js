@@ -71,7 +71,15 @@ const BlockchainManager = (io, app) => {
 	}
 
 	app.get('/', function(req, res, next) {
-		res.render('index', { title: 'Express' });
+		if(blockchain.isInitialized()){
+			res.redirect('/stats')
+		} else {
+			res.render('index', { title: 'Express' });
+		}
+	});
+
+	app.get('/stats', function (req, res, next) {
+		res.render('stats');
 	});
 
 	app.get('/nodes', (req, res) => {
