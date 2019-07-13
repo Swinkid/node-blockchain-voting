@@ -1,7 +1,9 @@
-const multer = require('multer');
-const csv = require('csv-parser');
 const fs = require('fs');
+
 const ECKey = require('ec-key');
+const multer = require('multer');
+const QRCode = require('qrcode');
+const csv = require('csv-parser');
 
 const upload = multer({
 	dest: './tmp/'
@@ -44,10 +46,16 @@ const SetupRoute = (app, blockchain, identityManager) => {
 	});
 
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
-		console.log(req)
+		let {voterCount} = req.body;
+
+		let randomKey = ECKey.createECKey('P-256');
+		QRCode.toFile('test.png', randomKey.toString('pem'), function (err) {
+			console.error(err);
+		});
 
 		//TODO: Save keys locally
 		//TODO: Fetch latest chain from master
+		//TODO: Add 'vote' credit to each and push to blockchain
 
 		res.json({status: 'OK'});
 	});
