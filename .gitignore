@@ -67,3 +67,5 @@ typings/
 /public.pem
 /private.pem
 node_keys/*.pem
+tmp/
+tmp/*
