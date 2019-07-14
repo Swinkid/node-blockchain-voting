@@ -69,3 +69,4 @@ typings/
 node_keys/*.pem
 tmp/
 tmp/*
+/test.png

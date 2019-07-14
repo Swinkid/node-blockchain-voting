@@ -33,6 +33,10 @@ class Blockchain {
 		this.nodes.push(node);
 	}
 
+	getChain(){
+		return this.blockchain;
+	}
+
 	removeNode(host, port){
 		for(var i = 0; i < this.nodes.length; i++){
 			if(this.nodes[i].host === host  && this.nodes[i].port === port){

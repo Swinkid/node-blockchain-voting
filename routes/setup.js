@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+const axios = require('axios');
 const ECKey = require('ec-key');
 const multer = require('multer');
 const QRCode = require('qrcode');
@@ -24,6 +25,8 @@ const SetupRoute = (app, blockchain, identityManager) => {
 
 
 		let node = 0;
+		let chain = [];
+
 		fs.createReadStream(req.file.path)
 			.pipe(csv())
 			.on('data', (row) => {
@@ -38,6 +41,8 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				node++;
 			});
 
+		blockchain.initialize(chain);
+
 		res.json({status: 'OK'});
 	});
 
@@ -46,16 +51,30 @@ const SetupRoute = (app, blockchain, identityManager) => {
 	});
 
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
+		let {MASTER_HOST, MASTER_PORT } = process.env;
 		let {voterCount} = req.body;
 
-		let randomKey = ECKey.createECKey('P-256');
-		QRCode.toFile('test.png', randomKey.toString('pem'), function (err) {
-			console.error(err);
+
+		let chain = [];
+		let transactions = [];
+
+		//TODO: Fetch latest chain from master
+		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`). then((result) => {
+			chain = result.data;
 		});
 
-		//TODO: Save keys locally
-		//TODO: Fetch latest chain from master
-		//TODO: Add 'vote' credit to each and push to blockchain
+		for(let i  = 0; i < voterCount; i++){
+			let key = ECKey.createECKey('P-256');
+
+			QRCode.toFile(`node_keys/${i}.png`, key.toString('pem'), function (err) {
+				//TODO: Handle Error
+			});
+
+			//TODO: Add to Blockchain
+		}
+
+		//TODO: Add transactions to block, add block to chain, push.
+		blockchain.initialize(chain);
 
 		res.json({status: 'OK'});
 	});

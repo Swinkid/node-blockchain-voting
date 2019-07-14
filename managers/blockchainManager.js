@@ -100,6 +100,10 @@ const BlockchainManager = (io, app) => {
 		console.log(blockchain.isInitialized());
 	});
 
+	app.get('/blockchain', (req, res) => {
+		return res.json(blockchain.getChain());
+	});
+
 	app.post('/nodes', (req, res) => {
 		const { host, port } = req.body;
 		let node = `http://${host}:${port}`;

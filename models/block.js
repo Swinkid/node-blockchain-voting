@@ -1,4 +1,5 @@
-//import StringUtils from '../utils/StringUtils'
+const StringUtils = require('../utils/StringUtils');
+const Transaction = require('./transaction');
 
 class Block {
 
