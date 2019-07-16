@@ -2,6 +2,7 @@
 
 const Block = require('./block');
 const constants = require('../constants');
+const StringUtils = require('../utils/StringUtils');
 
 const POOL_MAX = 10;
 
@@ -78,6 +79,47 @@ class Blockchain {
 		this.nodes = nodes;
 	}
 
+	validateChain(difficulty){
+		let previousBlock = null;
+
+		for(let i = 0; i < this.blockchain.length; i++){
+			let currentBlock = this.blockchain[i];
+
+			if(i !== 0){
+				previousBlock = this.blockchain[i - 1];
+			}
+
+			if(!this.compareHash(currentBlock)){
+				return false;
+			}
+
+			if(i !== 0){
+				this.validatePreviousHash(currentBlock, previousBlock);
+			}
+
+			if(!this.checkProof(currentBlock, difficulty)){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	validatePreviousHash(current, previous){
+		return current.previousHash() === previous.hash;
+	}
+
+	checkProof(block, difficulty){
+		let target = StringUtils.getProofString(difficulty);
+		return block.hash.substring(0, difficulty) === target;
+	}
+
+	compareHash(currentBlock) {
+		let hash = currentBlock.hash;
+		let compare = currentBlock.calculateHash();
+
+		return hash === compare;
+	}
 }
 
 module.exports = Blockchain;

@@ -9,6 +9,8 @@ const csv = require('csv-parser');
 const Transaction = require('../models/transaction');
 const Block = require('../models/block');
 
+const DIFFICULTY = 2;
+
 const upload = multer({
 	dest: './tmp/'
 });
@@ -43,8 +45,10 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				node++;
 			}).on('finish', () => {
 				chain.push(new Block(null, transactions));
-				chain[0].proofWork(6);
+				chain[0].proofWork(DIFFICULTY);
 				blockchain.initialize(chain);
+
+				console.log(blockchain.validateChain(DIFFICULTY));
 				res.json({status: 'OK'});
 			});
 
