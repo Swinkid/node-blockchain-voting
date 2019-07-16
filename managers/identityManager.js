@@ -9,8 +9,6 @@ class IdentityManager {
 	constructor(){
 		this._publicKey = null;
 		this._privateKey = null;
-
-		//this.initializeKeys();
 	}
 
 	initializeKeys(){
@@ -59,22 +57,15 @@ class IdentityManager {
 		});
 	}
 
-	/**
-	 *
-	 * @param type
-	 * @returns {null|*}
-	 */
-	getKey(type){
-		if(type === "public"){
-			return this._publicKey;
-		}
 
-		if(type === "private"){
-			return this._privateKey;
-		}
-
-		return null;
+	getPublicKey(){
+		return this._publicKey.toString('spki');
 	}
+
+	getPrivateKey(){
+		return this._privateKey.toString('pkcs8');
+	}
+
 }
 
 module.exports = IdentityManager;

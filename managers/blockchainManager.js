@@ -6,7 +6,7 @@ const Node = require('../models/node');
 var Blockchain = require('../models/blockchain');
 const IdentityManger = require('../managers/identityManager');
 
-const socketListeners = require('../socketListeners');
+const socketListeners = require('../listeners');
 const socketActions = require('../constants');
 
 const { PORT, HOST, MASTER_HOST, MASTER_PORT } = process.env;

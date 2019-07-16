@@ -1,5 +1,9 @@
 //import Block from './block';
 
+const Block = require('./block');
+const constants = require('../constants');
+
+const POOL_MAX = 10;
 
 class Blockchain {
 
@@ -19,6 +23,8 @@ class Blockchain {
 
 	addBlock(block){
 		this.blockchain.push(block);
+		this.socket.emit(constants.END_MINING, this.blockchain());
+		console.log(`Added new block... Chain: ${this.blockchain}`)
 	}
 
 	lastBlock(){

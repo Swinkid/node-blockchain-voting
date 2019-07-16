@@ -6,6 +6,9 @@ const multer = require('multer');
 const QRCode = require('qrcode');
 const csv = require('csv-parser');
 
+const Transaction = require('../models/transaction');
+const Block = require('../models/block');
+
 const upload = multer({
 	dest: './tmp/'
 });
@@ -17,15 +20,12 @@ const SetupRoute = (app, blockchain, identityManager) => {
 	});
 
 	app.post('/setup/master', upload.single('file'), function (req, res, next) {
-		let { nodeTotal } = req.body;
-
-		if(!identityManager.keysExist()){
-			identityManager.initializeKeys();
-		}
-
+		identityManager.initializeKeys();
+		let publicKey = identityManager.getPublicKey();
 
 		let node = 0;
 		let chain = [];
+		let transactions = [];
 
 		fs.createReadStream(req.file.path)
 			.pipe(csv())
@@ -38,12 +38,19 @@ const SetupRoute = (app, blockchain, identityManager) => {
 
 				//TODO: Add to transaction, push to block, calc hash
 
+				transactions.push(new Transaction(publicKey, randomKey.asPublicECKey().toString('spki'), row.RegionRegisteredVoters));
+
 				node++;
+			}).on('finish', () => {
+				chain.push(new Block(null, transactions));
+				chain[0].proofWork(6);
+				blockchain.initialize(chain);
+				res.json({status: 'OK'});
 			});
 
-		blockchain.initialize(chain);
 
-		res.json({status: 'OK'});
+
+
 	});
 
 	app.get('/setup/client', function (req, res, next) {
