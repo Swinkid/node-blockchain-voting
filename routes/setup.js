@@ -38,8 +38,6 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				identityManager.saveKey(randomKey.asPublicECKey().toString('pem'), `node_keys/${row.Region}_pub.pem`);
 				identityManager.saveKey(randomKey.toString('pem'), `node_keys/${row.Region}_priv.pem`);
 
-				//TODO: Add to transaction, push to block, calc hash
-
 				transactions.push(new Transaction(publicKey, randomKey.asPublicECKey().toString('spki'), row.RegionRegisteredVoters));
 
 				node++;
@@ -63,31 +61,48 @@ const SetupRoute = (app, blockchain, identityManager) => {
 
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
 		let {MASTER_HOST, MASTER_PORT } = process.env;
-		let {voterCount} = req.body;
 
 
 		let chain = [];
 		let transactions = [];
 
-		//TODO: Fetch latest chain from master
-		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`). then((result) => {
+		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`).then((result) => {
 			chain = result.data;
+			//TODO Handle fail
+		}).then(() => {
+			let _pubKey = fs.readFileSync(req.files[0].path);
+			let _privKey = fs.readFileSync(req.files[1].path);
+
+			//TODO Check if valid
+			identityManager.saveKey(_pubKey, './public.pem');
+			identityManager.saveKey(_privKey, './private.pem');
+
+			identityManager.initializeKeys();
+			blockchain.initialize(chain);
+
+			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
+
+			for(let voters = 0; voters < voterCount; voters++){
+				let key = ECKey.createECKey('P-256');
+
+				QRCode.toFile(`node_keys/${i}.png`, key.toString('pem'), function (err) {
+				 		//TODO: Handle Error
+				});
+
+				transactions.push(new Transaction(identityManager.getPublicKey, key.asPublicECKey().toString('spki'),1));
+			}
+
+
+			let latestBlock = blockchain.lastBlock();
+			let newBlock = new Block(latestBlock.hash, transactions);
+			newBlock.proofWork(DIFFICULTY);
+			blockchain.addBlock(newBlock);
+
+			//TODO: Broadcast new block.....
+
+			res.json({status: 'OK'});
 		});
 
-		for(let i  = 0; i < voterCount; i++){
-			let key = ECKey.createECKey('P-256');
-
-			QRCode.toFile(`node_keys/${i}.png`, key.toString('pem'), function (err) {
-				//TODO: Handle Error
-			});
-
-			//TODO: Add to Blockchain
-		}
-
-		//TODO: Add transactions to block, add block to chain, push.
-		blockchain.initialize(chain);
-
-		res.json({status: 'OK'});
 	});
 
 	app.get('/setup', function (req, res, next) {

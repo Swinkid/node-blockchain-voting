@@ -14,7 +14,7 @@ class Blockchain {
 	}
 
 	initialize(blockchain){
-		this.blockchain = blockchain || []; //TODO add genesis block?
+		this.blockchain = blockchain || [];
 		this.transactionPool = [];
 	}
 
@@ -100,6 +100,8 @@ class Blockchain {
 			if(!this.checkProof(currentBlock, difficulty)){
 				return false;
 			}
+
+			//TODO: Verify transactions signature
 		}
 
 		return true;
@@ -119,6 +121,32 @@ class Blockchain {
 		let compare = currentBlock.calculateHash();
 
 		return hash === compare;
+	}
+
+	getBalance(publickey){
+		let bal = 0;
+
+		for(let b = 0; b < this.blockchain.length; b++){
+
+			let block = this.blockchain[b];
+
+			for(let t = 0; t < this.blockchain[b]._data.length ; t++){
+
+				let transaction = block._data[t];
+
+				if(transaction.sender === publickey){
+					bal -= parseInt(transaction.amount);
+				}
+
+				if(transaction.receiver === publickey){
+					bal += parseInt(transaction.amount);
+				}
+
+			}
+
+		}
+
+		return bal;
 	}
 }
 
