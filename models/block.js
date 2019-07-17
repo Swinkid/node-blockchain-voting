@@ -7,11 +7,11 @@ class Block {
 
 	constructor(previousHash, data){
 		this._timeStamp = new Date();
-		this._hash = this.calculateHash();
 		this._previousHash = previousHash;
 		this._data = data;
 		this._nonce = 0;
 		this._merkle = Merkle('sha256').sync(this._data).root();
+		this._hash = this.calculateHash();
 	}
 
 	calculateHash(){
@@ -19,7 +19,8 @@ class Block {
 			this._previousHash +
 			this._data +
 			this._timeStamp +
-			this._nonce
+			this._nonce +
+			this._merkle
 		)
 	}
 

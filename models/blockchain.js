@@ -102,6 +102,7 @@ class Blockchain {
 			}
 
 			//TODO: Verify transactions signature
+			//TODO: Verify Merkle Root for block
 		}
 
 		return true;
