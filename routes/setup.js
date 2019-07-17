@@ -44,15 +44,11 @@ const SetupRoute = (app, blockchain, identityManager) => {
 			}).on('finish', () => {
 				chain.push(new Block(null, transactions));
 				chain[0].proofWork(DIFFICULTY);
+
 				blockchain.initialize(chain);
 
-				console.log(blockchain.validateChain(DIFFICULTY));
-				res.json({status: 'OK'});
+				res.redirect('/');
 			});
-
-
-
-
 	});
 
 	app.get('/setup/client', function (req, res, next) {
@@ -100,13 +96,13 @@ const SetupRoute = (app, blockchain, identityManager) => {
 
 			//TODO: Broadcast new block.....
 
-			res.json({status: 'OK'});
+			res.redirect('/');
 		});
 
 	});
 
 	app.get('/setup', function (req, res, next) {
-		//TODO: If keys already exist, skip?
+		res.render('')
 	})
 };
 

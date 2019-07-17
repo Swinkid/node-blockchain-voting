@@ -1,3 +1,5 @@
+const Merkle = require('merkle');
+
 const StringUtils = require('../utils/StringUtils');
 const Transaction = require('./transaction');
 
@@ -9,6 +11,7 @@ class Block {
 		this._previousHash = previousHash;
 		this._data = data;
 		this._nonce = 0;
+		this._merkle = Merkle('sha256').sync(this._data).root();
 	}
 
 	calculateHash(){

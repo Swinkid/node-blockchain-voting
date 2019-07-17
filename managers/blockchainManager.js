@@ -74,12 +74,12 @@ const BlockchainManager = (io, app) => {
 		if(blockchain.isInitialized()){
 			res.redirect('/stats')
 		} else {
-			res.render('index', { title: 'Express' });
+			res.redirect('/setup')
 		}
 	});
 
 	app.get('/stats', function (req, res, next) {
-		res.render('stats');
+		res.render('stats', { blockchain: blockchain.getChain(), nodes: blockchain.getNodes()});
 	});
 
 	app.get('/nodes', (req, res) => {
