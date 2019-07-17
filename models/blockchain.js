@@ -6,6 +6,7 @@ const StringUtils = require('../utils/StringUtils');
 
 const POOL_MAX = 10;
 
+
 class Blockchain {
 
 	constructor(socket){

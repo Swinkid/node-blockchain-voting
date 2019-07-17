@@ -79,7 +79,8 @@ const BlockchainManager = (io, app) => {
 	});
 
 	app.get('/stats', function (req, res, next) {
-		res.render('stats', { blockchain: blockchain.getChain(), nodes: blockchain.getNodes()});
+		//TODO FIX CHAIN VALIDATION
+		res.render('stats', { blockchain: blockchain, nodes: blockchain.getNodes()});
 	});
 
 	app.get('/nodes', (req, res) => {
