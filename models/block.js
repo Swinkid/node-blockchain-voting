@@ -6,12 +6,22 @@ const Transaction = require('./transaction');
 class Block {
 
 	constructor(previousHash, data){
-		this._timeStamp = new Date();
+		this._timeStamp = Date.now();
 		this._previousHash = previousHash;
 		this._data = data;
 		this._nonce = 0;
-		this._merkle = Merkle('sha256').sync(this._data).root();
+		this._merkle = Merkle('sha256').sync(this.getTransactionIds()).root();
 		this._hash = this.calculateHash();
+	}
+
+	getTransactionIds(){
+		let transactionIds = [];
+
+		for(let d = 0; d < this._data.length; d++){
+			transactionIds.push(this._data[d].transactionId);
+		}
+
+		return transactionIds;
 	}
 
 	calculateHash(){

@@ -38,7 +38,7 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				identityManager.saveKey(randomKey.asPublicECKey().toString('pem'), `node_keys/${row.Region}_pub.pem`);
 				identityManager.saveKey(randomKey.toString('pem'), `node_keys/${row.Region}_priv.pem`);
 
-				transactions.push(new Transaction(publicKey, randomKey.asPublicECKey().toString('spki'), row.RegionRegisteredVoters));
+				transactions.push(new Transaction(publicKey, randomKey.asPublicECKey().toString('spki'), row.RegionRegisteredVoters, identityManager.getPrivateKey()));
 
 				node++;
 			}).on('finish', () => {
@@ -66,8 +66,8 @@ const SetupRoute = (app, blockchain, identityManager) => {
 			chain = result.data;
 			//TODO Handle fail
 		}).then(() => {
-			let _pubKey = fs.readFileSync(req.files[0].path);
-			let _privKey = fs.readFileSync(req.files[1].path);
+			const _pubKey = fs.readFileSync(req.files[0].path);
+			const _privKey = fs.readFileSync(req.files[1].path);
 
 			//TODO Check if valid
 			identityManager.saveKey(_pubKey, './public.pem');
@@ -85,7 +85,11 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				 		//TODO: Handle Error
 				});
 
-				transactions.push(new Transaction(identityManager.getPublicKey, key.asPublicECKey().toString('spki'),1));
+
+				let newTransaction = new Transaction(identityManager.getPublicKey, key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+				transactions.push(newTransaction);
+
+				console.log(transactions[voters].verifyTransaction(identityManager.getPublicKey(), transactions[voters].signature))
 			}
 
 
