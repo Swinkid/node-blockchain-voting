@@ -5,33 +5,37 @@ const Transaction = require('./transaction');
 
 class Block {
 
-	constructor(previousHash, data){
-		this._timeStamp = Date.now();
-		this._previousHash = previousHash;
-		this._data = data;
-		this._nonce = 0;
-		this._merkle = Merkle('sha256').sync(this.getTransactionIds()).root();
-		this._hash = this.calculateHash();
+	constructor(previousHash, data, block){
+		if(block !== undefined){
+			this.parseBlock(block)
+		} else {
+			this._timeStamp = Date.now();
+			this._previousHash = previousHash;
+			this._data = data;
+			this._nonce = 0;
+			this._merkle = Merkle('sha256').sync(this.getTransactionIds()).root();
+			this._hash = this.calculateHash();
+		}
 	}
 
 	parseBlock(block) {
-		this._previousHash = block._previousHash;
 		this._timeStamp = block._timeStamp;
-		this._nonce = block._nonce;
-		this._merkle = block._merkle;
+		this._previousHash = block._previousHash;
 
 		this._data = block._data.map(transaction => {
-			const parsedTransaction = new Transaction();
-			parsedTransaction.parseTransaction(transaction);
-			return parsedTransaction;
+			return new Transaction(null, null, null, null, transaction);
 		});
+
+		this._nonce = block._nonce;
+		this._merkle = block._merkle;
+		this._hash = block.hash;
 	}
 
 	getTransactionIds(){
 		let transactionIds = [];
 
-		this._data.forEach((block) => {
-			transactionIds.push(block.transactionId);
+		this._data.forEach((transaction) => {
+			transactionIds.push(transaction.transactionId);
 		});
 
 		return transactionIds;

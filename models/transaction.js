@@ -3,13 +3,17 @@ const StringUtil = require('../utils/StringUtils');
 
 class Transaction {
 
-	constructor(sender, receiver, amount, senderPrivateKey) {
-		this.sender = sender;
-		this.receiver = receiver;
-		this.amount = amount;
-		this.timestamp = Date.now();
-		this.transactionId = this.calculateHash();
-		this.signature = this.signTransactions(senderPrivateKey);
+	constructor(sender, receiver, amount, senderPrivateKey, transaction) {
+		if(transaction !== undefined){
+			this.parseTransaction(transaction);
+		} else {
+			this.sender = sender;
+			this.receiver = receiver;
+			this.amount = amount;
+			this.timestamp = Date.now();
+			this.transactionId = this.calculateHash();
+			this.signature = this.signTransactions(senderPrivateKey);
+		}
 	}
 
 	signTransactions(privateKey){
