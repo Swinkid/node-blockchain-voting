@@ -34,6 +34,15 @@ class Transaction {
 		);
 	}
 
+	parseTransaction(transaction) {
+		this.sender = transaction.sender;
+		this.receiver = transaction.receiver;
+		this.amount = transaction.amount;
+		this.timestamp = transaction.timestamp;
+		this.transactionId = transaction.transactionId;
+		this.signature = transaction.signature;
+	}
+
 	//TODO: Sign transactions
 }
 

@@ -8,14 +8,13 @@ const csv = require('csv-parser');
 
 const Transaction = require('../models/transaction');
 const Block = require('../models/block');
-
-const DIFFICULTY = 2;
+const Constants = require('../constants');
 
 const upload = multer({
 	dest: './tmp/'
 });
 
-const SetupRoute = (app, blockchain, identityManager) => {
+const SetupRoute = (app, blockchain, identityManager, io) => {
 
 	app.get('/setup/master', function(req, res, next) {
 		res.render('setup/master');
@@ -43,7 +42,7 @@ const SetupRoute = (app, blockchain, identityManager) => {
 				node++;
 			}).on('finish', () => {
 				chain.push(new Block(null, transactions));
-				chain[0].proofWork(DIFFICULTY); //TODO: Move DIFFICULTY into constructor to make accessible everywhere
+				chain[0].proofWork(process.env.DIFFICULTY); //TODO: Move DIFFICULTY into constructor to make accessible everywhere
 
 				blockchain.initialize(chain);
 
@@ -60,18 +59,17 @@ const SetupRoute = (app, blockchain, identityManager) => {
 
 
 		let chain = [];
-		let transactions = [];
 
 		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`).then((result) => {
 			chain = result.data;
 			//TODO Handle fail
 		}).then(() => {
-			const _pubKey = fs.readFileSync(req.files[0].path);
-			const _privKey = fs.readFileSync(req.files[1].path);
+			const pubKey = fs.readFileSync(req.files[0].path);
+			const privKey = fs.readFileSync(req.files[1].path);
 
 			//TODO Check if valid
-			identityManager.saveKey(_pubKey, './public.pem');
-			identityManager.saveKey(_privKey, './private.pem');
+			identityManager.saveKey(pubKey, './public.pem');
+			identityManager.saveKey(privKey, './private.pem');
 
 			identityManager.initializeKeys();
 			blockchain.initialize(chain);
@@ -81,24 +79,12 @@ const SetupRoute = (app, blockchain, identityManager) => {
 			for(let voters = 0; voters < voterCount; voters++){
 				let key = ECKey.createECKey('P-256');
 
-				QRCode.toFile(`node_keys/${i}.png`, key.toString('pem'), function (err) {
+				QRCode.toFile(`node_keys/${voters}.png`, key.toString('pem'), function (err) {
 				 		//TODO: Handle Error
 				});
 
-
-				let newTransaction = new Transaction(identityManager.getPublicKey, key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
-				transactions.push(newTransaction);
-
-				console.log(transactions[voters].verifyTransaction(identityManager.getPublicKey(), transactions[voters].signature))
+				io.emit(Constants.ADD_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 			}
-
-
-			let latestBlock = blockchain.lastBlock();
-			let newBlock = new Block(latestBlock.hash, transactions);
-			newBlock.proofWork(DIFFICULTY);
-			blockchain.addBlock(newBlock);
-
-			//TODO: Broadcast new block.....
 
 			res.redirect('/');
 		});

@@ -29,6 +29,11 @@ var io = app.io;
 io.attach(server);
 
 /**
+ * Set difficulty
+ * @type {number}
+ */
+process.env.DIFFICULTY = 2;
+/**
  * Listen on provided port, on all network interfaces.
  */
 

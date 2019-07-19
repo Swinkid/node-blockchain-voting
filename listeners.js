@@ -4,24 +4,22 @@ const Transaction = require('./models/transaction');
 const Blockchain = require('./models/blockchain');
 
 const listeners = (socket, blockchain) => {
-	socket.on(SocketActions.ADD_TRANSACTION, (sender, receiver) => {
-		//TODO
+	socket.on(SocketActions.ADD_TRANSACTION, (sender, receiver, amount, privateKey) => {
+		const transaction = new Transaction(sender, receiver, amount, privateKey);
+		blockchain.newTransaction(transaction);
+		console.log(`Transaction recieved.`)
 	});
 
 	socket.on(SocketActions.END_MINING, (newChain) => {
-		//TODO
-	});
+		process.env.BREAK = 'true';
 
-	socket.on(SocketActions.NEW_NODE, (data) => {
-		//TODO
-	});
+		const newBlockchain = new Blockchain();
+		newBlockchain.parseChain(newChain);
 
-	socket.on(SocketActions.NODE_OFFLINE, (data) => {
-		//TODO
-	});
+		if(newBlockchain.validateChain(process.env.DIFFICULTY) && newBlockchain.getChainLength() >= blockchain.getChainLength()){
+			blockchain.setChain(newChain);
+		}
 
-	socket.on(SocketActions.NODE_ONLINE, (data) => {
-		//TODO
 	});
 
 	return socket;

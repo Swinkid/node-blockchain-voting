@@ -14,12 +14,25 @@ class Block {
 		this._hash = this.calculateHash();
 	}
 
+	parseBlock(block) {
+		this._previousHash = block._previousHash;
+		this._timeStamp = block._timeStamp;
+		this._nonce = block._nonce;
+		this._merkle = block._merkle;
+
+		this._data = block._data.map(transaction => {
+			const parsedTransaction = new Transaction();
+			parsedTransaction.parseTransaction(transaction);
+			return parsedTransaction;
+		});
+	}
+
 	getTransactionIds(){
 		let transactionIds = [];
 
-		for(let d = 0; d < this._data.length; d++){
-			transactionIds.push(this._data[d].transactionId);
-		}
+		this._data.forEach((block) => {
+			transactionIds.push(block.transactionId);
+		});
 
 		return transactionIds;
 	}
@@ -34,15 +47,33 @@ class Block {
 		)
 	}
 
+
 	proofWork(difficulty){
-		let target = StringUtils.getProofString(difficulty);
+		new Promise((resolve) => {
+			setImmediate(async () => {
+				this._nonce = parseInt(this._nonce) + 1;
+				this._hash = this.calculateHash();
 
-		while(this._hash.substring(0, difficulty) !== target){
-			this._nonce = parseInt(this._nonce) + 1;
-			this._hash = this.calculateHash();
-		}
+				let targetProof = StringUtils.getProofString(difficulty);
 
+				if(StringUtils.validateProof(targetProof, this.hash, difficulty) || process.env.BREAK === 'true'){
+					resolve(process.env.BREAK);
+				} else {
+					resolve(await this.proofWork(difficulty));
+				}
+			});
+		});
 	}
+
+	//proofWork(difficulty){
+	//	let target = StringUtils.getProofString(difficulty);
+	//
+	//	while(this._hash.substring(0, difficulty) !== target){
+	//		this._nonce = parseInt(this._nonce) + 1;
+	//		this._hash = this.calculateHash();
+	//	}
+	//
+	//}
 
 	get previousHash() {
 		return this._previousHash;

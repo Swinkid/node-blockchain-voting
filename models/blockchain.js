@@ -6,12 +6,19 @@ const StringUtils = require('../utils/StringUtils');
 
 const POOL_MAX = 10;
 
-
 class Blockchain {
 
 	constructor(socket){
 		this.nodes = [];
 		this.socket = socket;
+	}
+
+	parseChain(blocks) {
+		this.blockchain = blocks.map(block => {
+			const parsedBlock = new Block(0);
+			parsedBlock.parseBlock(block);
+			return parsedBlock;
+		});
 	}
 
 	initialize(blockchain){
@@ -25,16 +32,19 @@ class Blockchain {
 
 	addBlock(block){
 		this.blockchain.push(block);
-		//this.socket.emit(constants.END_MINING, this.blockchain());
-		console.log(`Added new block... Chain: ${this.blockchain}`)
+		this.socket.emit(constants.END_MINING, this.blockchain);
 	}
 
-	lastBlock(){
+	getLastBlock(){
 		return this.blockchain[this.blockchain.length - 1];
 	}
 
 	getChainLength(){
 		return this.blockchain.length;
+	}
+
+	setChain(chain){
+		this.blockchain = chain;
 	}
 
 	addNode(node){
@@ -80,25 +90,46 @@ class Blockchain {
 		this.nodes = nodes;
 	}
 
+	async newTransaction(transaction){
+		this.transactionPool.push(transaction);
+		console.log(`Transaction added to transaction pool.`);
+
+		if(this.transactionPool.length === POOL_MAX){
+			console.log(`Transaction pool contains ${this.transactionPool.length} items. Bigger than ${POOL_MAX}, mining.`);
+			process.env.BREAK = false;
+
+			let block = new Block(this.getLastBlock().hash, this.transactionPool);
+			let mine = block.proofWork(process.env.DIFFICULTY);
+
+			this.transactionPool = [];
+
+			if(mine !== 'true'){
+				this.addBlock(block);
+			}
+
+		}
+
+	}
+
 	validateChain(difficulty){
 		let previousBlock = null;
 
-		for(let i = 0; i < this.blockchain.length; i++){
+		for(let i = 0; i < this.getChainLength(); i++){
 			let currentBlock = this.blockchain[i];
 
 			if(i !== 0){
 				previousBlock = this.blockchain[i - 1];
 			}
 
-			if(!this.compareHash(currentBlock)){
+			if(!Blockchain.compareHash(currentBlock)){
 				return false;
 			}
 
 			if(i !== 0){
-				this.validatePreviousHash(currentBlock, previousBlock);
+				Blockchain.validatePreviousHash(currentBlock, previousBlock);
 			}
 
-			if(!this.checkProof(currentBlock, difficulty)){
+			if(!Blockchain.checkProof(currentBlock, difficulty)){
 				return false;
 			}
 
@@ -109,16 +140,16 @@ class Blockchain {
 		return true;
 	}
 
-	validatePreviousHash(current, previous){
+	static validatePreviousHash(current, previous){
 		return current.previousHash() === previous.hash;
 	}
 
-	checkProof(block, difficulty){
+	static checkProof(block, difficulty){
 		let target = StringUtils.getProofString(difficulty);
 		return block.hash.substring(0, difficulty) === target;
 	}
 
-	compareHash(currentBlock) {
+	static compareHash(currentBlock) {
 		let hash = currentBlock.hash;
 		let compare = currentBlock.calculateHash();
 

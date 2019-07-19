@@ -1,13 +1,12 @@
 const client = require('socket.io-client');
 const axios = require('axios');
-const _ = require('lodash');
 
 const Node = require('../models/node');
-var Blockchain = require('../models/blockchain');
+const Blockchain = require('../models/blockchain');
 const IdentityManger = require('../managers/identityManager');
 
 const socketListeners = require('../listeners');
-const socketActions = require('../constants');
+const Constants = require('../constants');
 
 const { PORT, HOST, MASTER_HOST, MASTER_PORT } = process.env;
 
@@ -19,7 +18,7 @@ const BlockchainManager = (io, app) => {
 	app.test = "meow";
 
 	const identityManager = new IdentityManger();
-	const setupRoute = require('../routes/setup')(app, blockchain, identityManager);
+	const setupRoute = require('../routes/setup')(app, blockchain, identityManager, io);
 
 	if((MASTER_HOST && MASTER_PORT)){
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
@@ -76,6 +75,13 @@ const BlockchainManager = (io, app) => {
 		} else {
 			res.redirect('/setup')
 		}
+	});
+
+	app.post('/transaction', function(req, res, next) {
+		const {sender, reciever, privateKey} = req.body;
+
+		io.emit(Constants.ADD_TRANSACTION, sender, reciever, 1, privateKey);
+		res.json({status: 'Ok'}).end();
 	});
 
 	app.get('/stats', function (req, res, next) {

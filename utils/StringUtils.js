@@ -11,6 +11,10 @@ class StringUtils {
 		return String("0").repeat(difficulty);
 	}
 
+	static validateProof(target, hash, difficulty){
+		return hash.substring(0, difficulty) === target;
+	}
+
 }
 
 module.exports = StringUtils;
