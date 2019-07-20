@@ -80,7 +80,7 @@ const BlockchainManager = (io, app) => {
 	app.post('/transaction', function(req, res, next) {
 		const {sender, reciever, privateKey} = req.body;
 
-		io.emit(Constants.ADD_TRANSACTION, sender, reciever, 1, privateKey);
+		io.emit(Constants.NEW_TRANSACTION, sender, reciever, 1, privateKey);
 		res.json({status: 'Ok'}).end();
 	});
 
@@ -109,6 +109,16 @@ const BlockchainManager = (io, app) => {
 
 	app.get('/blockchain', (req, res) => {
 		return res.json(blockchain.getChain());
+	});
+
+	app.get('/transaction/user', (req, res) => {
+		const {publicKey} = req.body;
+
+		let canVote = blockchain.getBalance(publicKey) >= 1;
+
+		return res.json({
+			valid: canVote
+		});
 	});
 
 	app.post('/nodes', (req, res) => {

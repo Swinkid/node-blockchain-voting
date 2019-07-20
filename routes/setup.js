@@ -83,7 +83,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				 		//TODO: Handle Error
 				});
 
-				io.emit(Constants.ADD_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 			}
 
 			res.redirect('/');

@@ -30,7 +30,7 @@ class Blockchain {
 
 	addBlock(block){
 		this.blockchain.push(block);
-		this.socket.emit(constants.END_MINING, this.blockchain);
+		this.socket.emit(constants.STOP_WORK, this.blockchain);
 	}
 
 	getLastBlock(){
