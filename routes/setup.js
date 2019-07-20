@@ -21,12 +21,16 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 	});
 
 	app.post('/setup/master', upload.single('file'), function (req, res, next) {
+		const {candidateCount} = req.body;
+
 		identityManager.initializeKeys();
 		let publicKey = identityManager.getPublicKey();
 
 		let node = 0;
 		let chain = [];
 		let transactions = [];
+
+		generateCandidateKeys(candidateCount);
 
 		fs.createReadStream(req.file.path)
 			.pipe(csv())
@@ -56,7 +60,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
 		let {MASTER_HOST, MASTER_PORT } = process.env;
-
+		const {candidateCount} = req.body;
 
 		let chain = [];
 
@@ -86,6 +90,8 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 			}
 
+			generateCandidateKeys(candidateCount);
+
 			res.redirect('/');
 		});
 
@@ -96,6 +102,15 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 	})
 };
 
+function generateCandidateKeys(candidateCount){
+	for(let candidates = 0; candidates < candidateCount; candidates++){
+		let key = ECKey.createECKey('P-256');
+
+		QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
+			//TODO: Handle Error
+		});
+	}
+}
 
 
 module.exports = SetupRoute;
