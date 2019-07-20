@@ -111,7 +111,7 @@ const BlockchainManager = (io, app) => {
 		return res.json(blockchain.getChain());
 	});
 
-	app.get('/transaction/user', (req, res) => {
+	app.post('/transaction/user', (req, res) => {
 		const {publicKey} = req.body;
 
 		let canVote = blockchain.getBalance(publicKey) >= 1;
