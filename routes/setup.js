@@ -66,7 +66,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`).then((result) => {
 			chain = result.data;
-		}).then(() => {
+		}).then(async () => {
 			const pubKey = fs.readFileSync(req.files[0].path);
 			const privKey = fs.readFileSync(req.files[1].path);
 
@@ -83,14 +83,9 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
 
-			for(let voters = 0; voters < voterCount; voters++){
-				let key = ECKey.createECKey('P-256');
-
-				QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
-				 		console.log(err);
-				});
-
+			for (let voters = 0; voters < voterCount; voters++) {
 				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+				await createQRCode(voters, io, identityManager);
 			}
 
 			generateCandidateKeys(candidateCount);
@@ -116,6 +111,20 @@ function generateCandidateKeys(candidateCount){
 			//TODO: Handle Error
 		});
 	}
+}
+
+function createQRCode(voters){
+
+	return new Promise(resolve => {
+
+		let key = ECKey.createECKey('P-256');
+
+		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+			console.log(err);
+		});
+
+		resolve();
+	});
 }
 
 
