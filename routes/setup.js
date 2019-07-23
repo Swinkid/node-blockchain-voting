@@ -82,15 +82,11 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.initialize(chain);
 
-			let voterCount = blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
-
-				setupTransaction(amount, io, identityManager).then(result => {
-					generateCandidateKeys(candidateCount).then(complete => {
-
-					});
-				});
-
+			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
+				setupTransaction(amount, io, identityManager);
 			});
+
+			generateCandidateKeys(candidateCount).then(complete => {});
 
 			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
 
@@ -116,23 +112,33 @@ function generateCandidateKeys(candidateCount){
 				//TODO: Handle Error
 			});
 		}
+
+		resolve();
 	});
 }
 
-function setupTransaction(voterCount, io, identityManager){
+function setupTransaction(amount, io, identityManager){
 	return new Promise(resolve => {
 		for (let voters = 0; voters < amount; voters++) {
 			let key = ECKey.createECKey('P-256');
 
+			writeQR(voters, key);
 			io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 
-			QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
-
-			});
 		}
 
-		resolve()
-})
+		resolve();
+	});
+}
+
+function writeQR(voters, key){
+	new Promise(resolve => {
+		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+
+		});
+
+		resolve();
+	})
 }
 
 module.exports = SetupRoute;
