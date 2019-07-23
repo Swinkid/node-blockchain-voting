@@ -119,13 +119,15 @@ function generateCandidateKeys(candidateCount){
 
 function setupTransaction(amount, io, identityManager){
 	return new Promise(resolve => {
-		for (let voters = 0; voters < amount; voters++) {
-			let key = ECKey.createECKey('P-256');
+		setImmediate(() => {
+			for (let voters = 0; voters < amount; voters++) {
+				let key = ECKey.createECKey('P-256');
 
-			writeQR(voters, key);
-			sendEmit(io, identityManager);
+				writeQR(voters, key);
+				sendEmit(io, identityManager, key);
 
-		}
+			}
+		});
 
 		resolve();
 	});
@@ -141,7 +143,7 @@ function writeQR(voters, key){
 	})
 }
 
-function sendEmit(io, identityManager){
+function sendEmit(io, identityManager, key){
 	return new Promise(resolve => {
 		io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 	})
