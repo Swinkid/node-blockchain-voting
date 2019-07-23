@@ -5,6 +5,7 @@ const ECKey = require('ec-key');
 const multer = require('multer');
 const QRCode = require('qrcode');
 const csv = require('csv-parser');
+const workerpool = require('workerpool');
 
 const Transaction = require('../models/transaction');
 const Block = require('../models/block');
@@ -83,14 +84,9 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
 
-			for (let voters = 0; voters < voterCount; voters++) {
-				let key = ECKey.createECKey('P-256');
+			var pool = workerpool.pool();
 
-				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
-				createQRCode(key, voters).then(() => {
-					//Nout
-				});
-			}
+			pool.exec(setupTransaction(voterCount, io, identityManager), []);
 
 			generateCandidateKeys(candidateCount);
 
@@ -117,17 +113,16 @@ function generateCandidateKeys(candidateCount){
 	}
 }
 
-function createQRCode(key, voters){
+function setupTransaction(voterCount, io, identityManager){
+	for (let voters = 0; voters < voterCount; voters++) {
+		let key = ECKey.createECKey('P-256');
 
-	return new Promise(resolve => {
+		io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 
 		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
-			resolve(err);
+
 		});
-
-		resolve();
-	});
+	}
 }
-
 
 module.exports = SetupRoute;
