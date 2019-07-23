@@ -84,7 +84,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			//let voterCount = blockchain.getBalance(identityManager.getPublicKey());
 
-			let voterCount = 300;
+			let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
 
 			for (let voters = 0; voters < voterCount; voters++) {
 				let key = ECKey.createECKey('P-256');

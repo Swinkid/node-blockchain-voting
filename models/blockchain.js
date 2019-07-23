@@ -179,6 +179,15 @@ class Blockchain {
 
 		return bal;
 	}
+
+	// Loops through first block for vote count
+	getVoterCount(publickey){
+		for(let i = 0; i < this.blockchain._data.length; i++){
+			if(publickey === this.blockchain[0]._data[i].receiver){
+				return this.blockchain[0]._data[i].amount;
+			}
+		}
+	}
 }
 
 module.exports = Blockchain;
