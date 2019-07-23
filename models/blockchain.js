@@ -155,29 +155,31 @@ class Blockchain {
 	}
 
 	getBalance(publickey){
-		let bal = 0;
+		return new Promise(resolve => {
+			let bal = 0;
 
-		for(let b = 0; b < this.blockchain.length; b++){
+			for(let b = 0; b < this.blockchain.length; b++){
 
-			let block = this.blockchain[b];
+				let block = this.blockchain[b];
 
-			for(let t = 0; t < this.blockchain[b]._data.length ; t++){
+				for(let t = 0; t < this.blockchain[b]._data.length ; t++){
 
-				let transaction = block._data[t];
+					let transaction = block._data[t];
 
-				if(transaction.sender === publickey){
-					bal -= parseInt(transaction.amount);
-				}
+					if(transaction.sender === publickey){
+						bal -= parseInt(transaction.amount);
+					}
 
-				if(transaction.receiver === publickey){
-					bal += parseInt(transaction.amount);
+					if(transaction.receiver === publickey){
+						bal += parseInt(transaction.amount);
+					}
+
 				}
 
 			}
 
-		}
-
-		return bal;
+			resolve(bal);
+		})
 	}
 
 	// Loops through first block for vote count

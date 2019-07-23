@@ -82,21 +82,21 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.initialize(chain);
 
-			//let voterCount = blockchain.getBalance(identityManager.getPublicKey());
+			let voterCount = blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
+				for (let voters = 0; voters < amount; voters++) {
+					let key = ECKey.createECKey('P-256');
 
-			let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
+					io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 
-			for (let voters = 0; voters < voterCount; voters++) {
-				let key = ECKey.createECKey('P-256');
+					QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
 
-				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+					});
+				}
 
-				QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+				generateCandidateKeys(candidateCount);
+			});
 
-				});
-			}
-
-			generateCandidateKeys(candidateCount);
+			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
 
 			res.redirect('/');
 		}).catch(function (error) {
