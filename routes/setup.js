@@ -84,12 +84,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
 				setupTransaction(amount, io, identityManager).then((keys) => {
-					let k = 0;
 
-					keys.forEach((key) => {
-						writeQR(k, key);
-						k++;
-					});
 				});
 			});
 
