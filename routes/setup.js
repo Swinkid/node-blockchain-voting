@@ -5,8 +5,10 @@ const ECKey = require('ec-key');
 const multer = require('multer');
 
 
-//const QRCode = require('qrcode');
-const qr = require('qr-image');
+const QRCode = require('qrcode');
+
+const child = require('child_process');
+//const qr = require('qr-image');
 
 
 const csv = require('csv-parser');
@@ -166,20 +168,15 @@ function writeQR(keys){
 			//
 			// });
 
-			// let qr = qr.image(key.toString('pem'), {
-			// 	type: 'png'
-			// });
-			//
-			// qr.pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
+			const n = child.fork(`${__basedir}/generateQR.js`);
 
-			let qr = qr.image(key.toString('pem'), { type: 'png' });
-			let ws = fs.createWriteStream(`${__basedir}/node_keys/${k}.png`);
-			ws.on('error', (e) => {
-				console.log(e);
+			n.send({
+				base: __basedir,
+				index: k,
+				key: key.toString('pem'),
 			});
 
-			ws.write(qr);
-			ws.end();
+
 
 
 			k++;
