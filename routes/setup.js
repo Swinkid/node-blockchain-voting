@@ -89,11 +89,13 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 					newKeys = keys;
 					res.redirect('/');
 				});
+			}).then(() => {
+				writeQR(newKeys);
 			});
 
 			generateCandidateKeys(candidateCount).then(complete => {});
 
-			writeQR(keys);
+
 
 			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
 
