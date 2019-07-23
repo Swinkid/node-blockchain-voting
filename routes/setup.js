@@ -84,8 +84,10 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
 
 			for (let voters = 0; voters < voterCount; voters++) {
+				let key = ECKey.createECKey('P-256');
+
 				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
-				await createQRCode(voters, io, identityManager);
+				await createQRCode(key, voters);
 			}
 
 			generateCandidateKeys(candidateCount);
@@ -113,11 +115,11 @@ function generateCandidateKeys(candidateCount){
 	}
 }
 
-function createQRCode(voters){
+function createQRCode(key, voters){
 
 	return new Promise(resolve => {
 
-		let key = ECKey.createECKey('P-256');
+
 
 		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
 			console.log(err);
