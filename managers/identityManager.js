@@ -30,6 +30,11 @@ class IdentityManager {
 		}
 	}
 
+	initializeClientKeys(priv){
+		this._privateKey = new ECKey(priv, 'pem');
+		this._publicKey = this._privateKey.asPublicECKey();
+	}
+
 	/**
 	 * Checks to see if the node has a key pair already saved.
 	 * @returns {boolean}
