@@ -82,11 +82,19 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.initialize(chain);
 
-			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
+			//let voterCount = blockchain.getBalance(identityManager.getPublicKey());
 
-			var pool = workerpool.pool();
+			let voterCount = 300;
 
-			pool.exec(setupTransaction(voterCount, io, identityManager), []);
+			for (let voters = 0; voters < voterCount; voters++) {
+				let key = ECKey.createECKey('P-256');
+
+				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+
+				QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+
+				});
+			}
 
 			generateCandidateKeys(candidateCount);
 
@@ -114,15 +122,7 @@ function generateCandidateKeys(candidateCount){
 }
 
 function setupTransaction(voterCount, io, identityManager){
-	for (let voters = 0; voters < voterCount; voters++) {
-		let key = ECKey.createECKey('P-256');
 
-		io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
-
-		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
-
-		});
-	}
 }
 
 module.exports = SetupRoute;
