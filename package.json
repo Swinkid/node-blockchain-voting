@@ -2,7 +2,7 @@
   "name": "node-blockchain-voting",
   "version": "0.0.0",
   "private": true,
-  "node_args": ["--debug=7000"],
+  "node_args": ["--inspect=7000"],
   "scripts": {
     "start": "node ./bin/www"
   },
