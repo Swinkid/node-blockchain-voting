@@ -48,7 +48,7 @@ class IdentityManager {
 	 * @param filename
 	 */
 	saveKey(key, filename){
-		fs.writeFileSync(filename, key, {flag: 'wx' },function (error) {
+		fs.writeFileSync(__dirname + '/' + filename, key, {flag: 'wx' },function (error) {
 			if(error){
 				console.error(`Problem saving ${filename}`);
 			}
