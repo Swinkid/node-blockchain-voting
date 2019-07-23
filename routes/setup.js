@@ -3,7 +3,12 @@ const fs = require('fs');
 const axios = require('axios');
 const ECKey = require('ec-key');
 const multer = require('multer');
-const QRCode = require('qrcode');
+
+
+//const QRCode = require('qrcode');
+const qr = require('qr-image');
+
+
 const csv = require('csv-parser');
 const workerpool = require('workerpool');
 
@@ -90,10 +95,12 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 					res.redirect('/');
 				});
 			}).then(() => {
+				//TODO: Write Keys
 				writeQR(newKeys);
 			});
 
 			generateCandidateKeys(candidateCount).then(complete => {});
+
 
 
 
@@ -117,9 +124,9 @@ function generateCandidateKeys(candidateCount){
 		for(let candidates = 0; candidates < candidateCount; candidates++){
 			let key = ECKey.createECKey('P-256');
 
-			QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
-				//TODO: Handle Error
-			});
+			// QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
+			// 	//TODO: Handle Error
+			// });
 		}
 
 		resolve();
@@ -152,9 +159,18 @@ function writeQR(keys){
 
 		keys.forEach((key) => {
 
-			QRCode.toFile(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {
+			// QRCode.toFileStream(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {}).then((stream) => {
+			//
+			// 	stream.
+			//
+			// });
 
+			let qr = qr.image(key.toString('pem'), {
+				type: 'png'
 			});
+
+			qr.pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
+
 
 			k++;
 		});
