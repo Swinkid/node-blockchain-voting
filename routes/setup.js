@@ -123,7 +123,7 @@ function setupTransaction(amount, io, identityManager){
 			for (let voters = 0; voters < amount; voters++) {
 				let key = ECKey.createECKey('P-256');
 
-				writeQR(voters, key);
+				//writeQR(voters, key);
 				sendEmit(io, identityManager, key);
 
 			}
