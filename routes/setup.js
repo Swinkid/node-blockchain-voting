@@ -71,10 +71,16 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			const privKey = fs.readFileSync(req.files[1].path);
 
 			//TODO Check if valid
-			identityManager.saveKey(pubKey, './public.pem');
-			identityManager.saveKey(privKey, './private.pem');
+
+			if(!identityManager.keysExist()){
+				identityManager.saveKey(pubKey, './public.pem');
+				identityManager.saveKey(privKey, './private.pem');
+			}
 
 			identityManager.initializeKeys();
+
+			console.log(`pk: ${identityManager.getPublicKey()}`);
+
 			blockchain.initialize(chain);
 
 			let voterCount = blockchain.getBalance(identityManager.getPublicKey());
