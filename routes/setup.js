@@ -66,7 +66,6 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 		axios.get(`http://${MASTER_HOST}:${MASTER_PORT}/blockchain`).then((result) => {
 			chain = result.data;
-			//TODO Handle fail
 		}).then(() => {
 			const pubKey = fs.readFileSync(req.files[0].path);
 			const privKey = fs.readFileSync(req.files[1].path);
@@ -84,7 +83,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				let key = ECKey.createECKey('P-256');
 
 				QRCode.toFile(`node_keys/${voters}.png`, key.toString('pem'), function (err) {
-				 		//TODO: Handle Error
+				 		console.log(err);
 				});
 
 				io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
@@ -93,6 +92,9 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			generateCandidateKeys(candidateCount);
 
 			res.redirect('/');
+		}).catch(function (error) {
+			console.log(error);
+			process.exit();
 		});
 
 	});
