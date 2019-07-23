@@ -75,6 +75,8 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			identityManager.saveKey(pubKey, './public.pem');
 			identityManager.saveKey(privKey, './private.pem');
 
+			console.log(`pk: ${identityManager.getPublicKey()}`);
+
 			identityManager.initializeKeys();
 
 			console.log(`pk: ${identityManager.getPublicKey()}`);
