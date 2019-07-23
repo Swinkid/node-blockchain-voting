@@ -83,7 +83,14 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			blockchain.initialize(chain);
 
 			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
-				setupTransaction(amount, io, identityManager);
+				setupTransaction(amount, io, identityManager).then((keys) => {
+					let k = 0;
+
+					keys.forEach((key) => {
+						writeQR(k, key);
+						k++;
+					});
+				});
 			});
 
 			generateCandidateKeys(candidateCount).then(complete => {});
@@ -120,16 +127,19 @@ function generateCandidateKeys(candidateCount){
 function setupTransaction(amount, io, identityManager){
 	return new Promise(resolve => {
 		setImmediate(() => {
+			let keys = [];
+
 			for (let voters = 0; voters < amount; voters++) {
 				let key = ECKey.createECKey('P-256');
 
 				//writeQR(voters, key);
+				keys.push(key);
 				sendEmit(io, identityManager, key);
 
 			}
-		});
 
-		resolve();
+			resolve(keys);
+		});
 	});
 }
 
