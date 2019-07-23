@@ -123,7 +123,7 @@ function setupTransaction(amount, io, identityManager){
 			let key = ECKey.createECKey('P-256');
 
 			writeQR(voters, key);
-			io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+			sendEmit(io, identityManager);
 
 		}
 
@@ -138,6 +138,12 @@ function writeQR(voters, key){
 		});
 
 		resolve();
+	})
+}
+
+function sendEmit(io, identityManager){
+	return new Promise(resolve => {
+		io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
 	})
 }
 
