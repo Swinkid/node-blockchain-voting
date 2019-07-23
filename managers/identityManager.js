@@ -48,7 +48,7 @@ class IdentityManager {
 	 * @param filename
 	 */
 	saveKey(key, filename){
-		fs.writeFile(__basedir + '/' + filename, key, {} ,function (error) {
+		fs.writeFile(__basedir + '/' + filename, key ,function (error) {
 			if(error){
 				console.error(`Problem saving ${filename}`);
 			}

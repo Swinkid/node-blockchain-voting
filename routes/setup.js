@@ -72,10 +72,8 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			//TODO Check if valid
 
-			if(!identityManager.keysExist()){
-				identityManager.saveKey(pubKey, './public.pem');
-				identityManager.saveKey(privKey, './private.pem');
-			}
+			identityManager.saveKey(pubKey, './public.pem');
+			identityManager.saveKey(privKey, './private.pem');
 
 			identityManager.initializeKeys();
 
