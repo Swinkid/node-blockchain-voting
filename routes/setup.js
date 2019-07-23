@@ -96,6 +96,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				});
 			}).then(() => {
 				//TODO: Write Keys
+				//TODO find a way to write QR to file without fooking the IO
 				writeQR(newKeys);
 			});
 
@@ -165,11 +166,13 @@ function writeQR(keys){
 			//
 			// });
 
-			let qr = qr.image(key.toString('pem'), {
-				type: 'png'
-			});
+			// let qr = qr.image(key.toString('pem'), {
+			// 	type: 'png'
+			// });
+			//
+			// qr.pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
 
-			qr.pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
+			let qr = qr.image(key.toString('pem'), { type: 'png' }).pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
 
 
 			k++;
