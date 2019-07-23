@@ -172,7 +172,14 @@ function writeQR(keys){
 			//
 			// qr.pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
 
-			let qr = qr.image(key.toString('pem'), { type: 'png' }).pipe(fs.createWriteStream(`${__basedir}/node_keys/${k}.png`));
+			let qr = qr.image(key.toString('pem'), { type: 'png' });
+			let ws = fs.createWriteStream(`${__basedir}/node_keys/${k}.png`);
+			ws.on('error', (e) => {
+				console.log(e);
+			});
+
+			ws.write(qr);
+			ws.end();
 
 
 			k++;
