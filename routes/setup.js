@@ -39,7 +39,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				let randomKey = ECKey.createECKey('P-256');
 
 				identityManager.saveKey(randomKey.asPublicECKey().toString('pem'), `node_keys/${row.Region}_pub.pem`);
-				identityManager.saveKey(randomKey.toString('pem'), `${__basedir}/node_keys/${row.Region}_priv.pem`);
+				identityManager.saveKey(randomKey.toString('pem'), `/node_keys/${row.Region}_priv.pem`);
 
 				transactions.push(new Transaction(publicKey, randomKey.asPublicECKey().toString('spki'), row.RegionRegisteredVoters, identityManager.getPrivateKey()));
 
@@ -86,7 +86,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			for(let voters = 0; voters < voterCount; voters++){
 				let key = ECKey.createECKey('P-256');
 
-				QRCode.toFile(`node_keys/${voters}.png`, key.toString('pem'), function (err) {
+				QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
 				 		console.log(err);
 				});
 
