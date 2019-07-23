@@ -82,17 +82,22 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.initialize(chain);
 
+			let newKeys = [];
+
 			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
 				setupTransaction(amount, io, identityManager).then((keys) => {
-
+					newKeys = keys;
+					res.redirect('/');
 				});
 			});
 
 			generateCandidateKeys(candidateCount).then(complete => {});
 
+			writeQR(keys);
+
 			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
 
-			res.redirect('/');
+
 		}).catch(function (error) {
 			console.log(error);
 			process.exit();
@@ -138,10 +143,18 @@ function setupTransaction(amount, io, identityManager){
 	});
 }
 
-function writeQR(voters, key){
+function writeQR(keys){
 	new Promise(resolve => {
-		QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
 
+		let k = 0;
+
+		keys.forEach((key) => {
+
+			QRCode.toFile(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {
+
+			});
+
+			k++;
 		});
 
 		resolve();
