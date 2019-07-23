@@ -46,7 +46,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				node++;
 			}).on('finish', () => {
 				chain.push(new Block(null, transactions));
-				chain[0].proofWork(process.env.DIFFICULTY); //TODO: Move DIFFICULTY into constructor to make accessible everywhere
+				chain[0].proofWork(process.env.DIFFICULTY);
 
 				blockchain.initialize(chain);
 
