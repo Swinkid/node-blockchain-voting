@@ -83,17 +83,13 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			blockchain.initialize(chain);
 
 			let voterCount = blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
-				for (let voters = 0; voters < amount; voters++) {
-					let key = ECKey.createECKey('P-256');
 
-					io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
-
-					QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+				setupTransaction(amount, io, identityManager).then(result => {
+					generateCandidateKeys(candidateCount).then(complete => {
 
 					});
-				}
+				});
 
-				generateCandidateKeys(candidateCount);
 			});
 
 			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
@@ -112,17 +108,31 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 };
 
 function generateCandidateKeys(candidateCount){
-	for(let candidates = 0; candidates < candidateCount; candidates++){
-		let key = ECKey.createECKey('P-256');
+	return new Promise(resolve => {
+		for(let candidates = 0; candidates < candidateCount; candidates++){
+			let key = ECKey.createECKey('P-256');
 
-		QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
-			//TODO: Handle Error
-		});
-	}
+			QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
+				//TODO: Handle Error
+			});
+		}
+	});
 }
 
 function setupTransaction(voterCount, io, identityManager){
+	return new Promise(resolve => {
+		for (let voters = 0; voters < amount; voters++) {
+			let key = ECKey.createECKey('P-256');
 
+			io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+
+			QRCode.toFile(`${__basedir}/node_keys/${voters}.png`, key.toString('pem'), function (err) {
+
+			});
+		}
+
+		resolve()
+})
 }
 
 module.exports = SetupRoute;
