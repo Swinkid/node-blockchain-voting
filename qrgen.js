@@ -11,9 +11,9 @@ const VOTER_PATH = `${PATH}/voterkeys`;
 
 process.on('message', message => {
 
-	fs.readdir(VOTER_PATH, function (error, files) {
-		if(error){
-			console.log('error');
+	fs.readdir(VOTER_PATH, function (directoryReadError, files) {
+		if(directoryReadError){
+			console.log(directoryReadError);
 		}
 
 		files.filter(function (file) {
@@ -22,23 +22,29 @@ process.on('message', message => {
 
 		let keyIndex = 0;
 		files.forEach((item) => {
-			fs.readFile(`${VOTER_PATH}/${item}`, function (error, fileContents) {
-				if(error) {
-					console.log(error);
+			fs.readFile(`${VOTER_PATH}/${item}`, function (readError, fileContents) {
+				if(readError) {
+					console.log(readError);
 				}
 
 				let key = new ECKey(fileContents, 'pem');
 
-				QRCode.toFile(`${PATH}/${keyIndex}${PNG_EXTENSION}`, key.toString('pkcs8'), function (err) {
-
+				QRCode.toFile(`${PATH}/${keyIndex}${PNG_EXTENSION}`, key.toString('pkcs8'), function (qrError) {
+					if(qrError){
+						console.log(qrError);
+					}
 				});
 
-				fs.unlink(`${VOTER_PATH}/${keyIndex}${PEM_EXTENSION}`, function (error) {
-
+				fs.unlink(`${VOTER_PATH}/${keyIndex}${PEM_EXTENSION}`, function (deleteError, deleteData) {
+					if(deleteError){
+						console.log(deleteError);
+					}
 				});
 
 				keyIndex++;
 			});
 		});
+
+		process.send('complete');
 	});
 });
