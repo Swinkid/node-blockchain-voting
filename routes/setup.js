@@ -7,12 +7,10 @@ const multer = require('multer');
 
 const QRCode = require('qrcode');
 
-const child = require('child_process');
 //const qr = require('qr-image');
 
 
 const csv = require('csv-parser');
-const workerpool = require('workerpool');
 
 const Transaction = require('../models/transaction');
 const Block = require('../models/block');
@@ -104,24 +102,16 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 	});
 
 	app.get('/setup/client/qr', function (req, res, next) {
-		blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
-			for(let k = 0; k < amount; k++){
-				let key = fs.readFile(`${__basedir}/node_keys/voterkeys/${k}.pem`, function (error, data) {
-					if(error){
-						console.log(error);
-					}
 
-					let pem = new ECKey(data, 'pem');
-					QRCode.toFile(`node_keys/voter-${k}.png`, pem.toString('pkcs8'), function (err) {
-						//TODO: Handle Error
-					});
+		const { fork } = require('child_process');
+		const n = fork(`${__basedir}/qrgen.js`);
 
-					//TODO Delete old key...
-				});
-			}
-
-			res.json({status: 'Ok'});
+		n.send({
+			message: 'ping'
 		});
+
+		res.json({ message: 'Ok'})
+
 	});
 
 	app.get('/setup', function (req, res, next) {
