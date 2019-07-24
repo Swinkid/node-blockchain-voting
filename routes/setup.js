@@ -151,7 +151,7 @@ function setupTransaction(amount, io, identityManager){
 			for (let voters = 0; voters < amount; voters++) {
 				let key = ECKey.createECKey('P-256');
 
-				identityManager.saveKey(key, `voterkeys/${voters}.pem`);
+				identityManager.saveKey(key, `node_keys/voterkeys/${voters}.pem`);
 				sendEmit(io, identityManager, key);
 			}
 
