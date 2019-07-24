@@ -168,7 +168,7 @@ function writeQR(keys){
 			//
 			// });
 
-			const n = child.fork(`${__basedir}/generateQR.js`);
+			const n = child.fork(`${__dirname}/qrgen.js`);
 
 			n.send({
 				base: __basedir,
