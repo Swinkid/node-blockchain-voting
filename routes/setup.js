@@ -96,13 +96,13 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 					newKeys = keys;
 					res.redirect('/');
 				});
-			}).then(() => {
-				//TODO: Write Keys
-				//TODO find a way to write QR to file without fooking the IO
-				writeQR(newKeys).then(() => {
-					console.log('Keys created.');
-				});
 			});
+
+			writeQR(newKeys).then((result) => {
+				console.log('Keys created.');
+			});
+
+
 
 			generateCandidateKeys(candidateCount).then(complete => {});
 
@@ -113,6 +113,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 
 		}).catch(function (error) {
+
 			console.log(error);
 			process.exit();
 		});
@@ -169,6 +170,8 @@ function writeQR(keys){
 			// 	stream.
 			//
 			// });
+
+			console.log('spawning child')
 
 			const n = child.fork(`${__dirname}/qrgen.js`);
 
