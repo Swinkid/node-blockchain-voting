@@ -99,7 +99,9 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			}).then(() => {
 				//TODO: Write Keys
 				//TODO find a way to write QR to file without fooking the IO
-				writeQR(newKeys);
+				writeQR(newKeys).then(() => {
+					console.log('Keys created.');
+				});
 			});
 
 			generateCandidateKeys(candidateCount).then(complete => {});
@@ -156,7 +158,7 @@ function setupTransaction(amount, io, identityManager){
 }
 
 function writeQR(keys){
-	new Promise(resolve => {
+	return new Promise(resolve => {
 
 		let k = 0;
 
