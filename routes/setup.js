@@ -93,31 +93,18 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
 				setupTransaction(amount, io, identityManager).then((keys) => {
-					newKeys = keys;
-					res.redirect('/');
+					writeQR(keys).then(result => {
+						generateCandidateKeys(candidateCount).then(complete => {
+							res.redirect('/');
+						});
+					});
 				});
 			});
 
-			writeQR(newKeys).then((result) => {
-				console.log('Keys created.');
-			});
-
-
-
-			generateCandidateKeys(candidateCount).then(complete => {});
-
-
-
-
-			//let voterCount = blockchain.getVoterCount(identityManager.getPublicKey());
-
-
 		}).catch(function (error) {
-
 			console.log(error);
 			process.exit();
 		});
-
 	});
 
 	app.get('/setup', function (req, res, next) {
@@ -161,35 +148,36 @@ function setupTransaction(amount, io, identityManager){
 function writeQR(keys){
 	return new Promise(resolve => {
 
-		let k = 0;
+		let keyString = [];
+		const child = child.fork(`${__basedir}/qrgen.js`);
 
 		keys.forEach((key) => {
-
-			// QRCode.toFileStream(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {}).then((stream) => {
-			//
-			// 	stream.
-			//
-			// });
-
-			console.log('spawning child')
-
-			const n = child.fork(`${__basedir}/qrgen.js`);
-
-			console.log(`${__basedir}`)
-
-			n.send({
-				base: __basedir,
-				index: k,
-				key: key.toString('pem'),
-			});
-
-
-
-
-			k++;
+			keyString.push(key.toString(key.toString('pem')));
 		});
 
-		resolve();
+		child.send({
+			base: __basedir,
+			keys: keyString
+		}, (err) => {
+			console.log(err);
+		});
+
+		child.on('message', (message) => {
+			if(message === 'complete'){
+				resolve();
+			}
+		})
+
+
+
+		// keys.forEach((key) => {
+		//
+		// 	// QRCode.toFileStream(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {}).then((stream) => {
+		// 	//
+		// 	// 	stream.
+		// 	//
+		// 	// });
+		//
 	})
 }
 

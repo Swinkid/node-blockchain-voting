@@ -2,5 +2,18 @@ const QRCode = require('qrcode');
 
 process.on('message', message => {
 	console.log('QR Child got Message :3');
-	QRCode.toFile(`${message.base}/node_keys/${message.index}.png`, message.key, function (err) {});
+
+	let k = 0;
+
+	message.keys.forEach((key) => {
+		QRCode.toFile(`${message.base}/node_keys/${k}.png`, key, function (err) {
+			console.log(err);
+		});
+
+		k++;
+	});
+
+	process.send('complete', (err) => {
+		console.log(err);
+	})
 });
