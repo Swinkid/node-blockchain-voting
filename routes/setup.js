@@ -173,7 +173,9 @@ function writeQR(keys){
 
 			console.log('spawning child')
 
-			const n = child.fork(`${__dirname}/qrgen.js`);
+			const n = child.fork(`${__basedir}/qrgen.js`);
+
+			console.log(`${__basedir}`)
 
 			n.send({
 				base: __basedir,
