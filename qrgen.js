@@ -3,48 +3,54 @@ const path = require('path');
 const QRCode = require('qrcode');
 const ECKey = require('ec-key');
 
-const PEM_EXTENSION = '.pem';
-const PNG_EXTENSION = '.png';
-
-const PATH = `${__dirname}/node_keys`;
-const VOTER_PATH = `${PATH}/voterkeys`;
+const EXTENSION = '.pem';
+const PATH = `${__dirname}/node_keys/voterkeys`;
 
 process.on('message', message => {
 
-	fs.readdir(VOTER_PATH, function (directoryReadError, files) {
-		if(directoryReadError){
-			console.log(directoryReadError);
+	fs.readdir(PATH, function (error, files) {
+		if(error){
+			console.log('error');
 		}
 
 		files.filter(function (file) {
-			return path.extname(file).toLowerCase() === PEM_EXTENSION;
+			return path.extname(file).toLowerCase() === EXTENSION;
 		});
 
 		let keyIndex = 0;
 		files.forEach((item) => {
-			fs.readFile(`${VOTER_PATH}/${item}`, function (readError, fileContents) {
-				if(readError) {
-					console.log(readError);
+			fs.readFile(`${PATH}/${item}`, function (error, fileContents) {
+				if(error) {
+					console.log(error);
 				}
 
 				let key = new ECKey(fileContents, 'pem');
 
-				QRCode.toFile(`${PATH}/${keyIndex}${PNG_EXTENSION}`, key.toString('pkcs8'), function (qrError) {
-					if(qrError){
-						console.log(qrError);
-					}
+				QRCode.toFile(`${__dirname}/node_keys/${keyIndex}.png`, key.toString('pkcs8'), function (err) {
+
 				});
 
-				fs.unlink(`${VOTER_PATH}/${keyIndex}${PEM_EXTENSION}`, function (deleteError, deleteData) {
-					if(deleteError){
-						console.log(deleteError);
-					}
+				fs.unlink(`${__dirname}/node_keys/voterkeys/${keyIndex}.pem`, function (error) {
+					
 				});
 
 				keyIndex++;
+
 			});
 		});
 
-		process.send('complete');
+
+		//TODO Delete pem
 	});
+
+
+
+	// message.keys.forEach((key) => {
+	// 	QRCode.toFile(`${message.base}/node_keys/${message.index}.png`, key, function (err) {
+	// 		console.log(err);
+	// 	});
+	//
+	// 	k++;
+	// });
+
 });
