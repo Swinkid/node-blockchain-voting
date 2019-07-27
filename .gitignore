@@ -67,6 +67,7 @@ typings/
 /public.pem
 /private.pem
 node_keys/*.pem
+node_keys/voterkeys/*.pem
 node_keys/*.png
 tmp/
 tmp/*

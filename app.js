@@ -1,12 +1,14 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-
+const cors = require('cors');
 const logger = require('morgan');
 const socket_io = require('socket.io');
 const client = require('socket.io-client');
 
 var app = express();
+app.use(cors());
+
 var io = socket_io();
 app.io = io;
 
