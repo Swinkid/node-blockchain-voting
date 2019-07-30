@@ -80,7 +80,10 @@ const BlockchainManager = (io, app) => {
 	app.post('/transaction', function(req, res, next) {
 		const {sender, reciever, privateKey} = req.body;
 
-		io.emit(Constants.NEW_TRANSACTION, sender, reciever, 1, privateKey);
+		const transaction = new Transaction(sender, reciever, 1, privateKey);
+		io.emit(Constants.NEW_TRANSACTION, transaction);
+
+		//io.emit(Constants.NEW_TRANSACTION, sender, reciever, 1, privateKey);
 		res.json({status: 'Ok'}).end();
 	});
 

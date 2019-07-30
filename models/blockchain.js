@@ -89,23 +89,32 @@ class Blockchain {
 	}
 
 	async newTransaction(transaction){
-		this.transactionPool.push(transaction);
-		console.log(`Transaction added to transaction pool.`);
 
-		if(this.transactionPool.length === POOL_MAX){
-			console.log(`Transaction pool contains ${this.transactionPool.length} items. Bigger than ${POOL_MAX}, mining.`);
-			process.env.BREAK = false;
+		if(transaction.verifyTransaction()){
 
-			let block = new Block(this.getLastBlock().hash, this.transactionPool);
-			let mine = block.proofWork(process.env.DIFFICULTY);
+			this.transactionPool.push(transaction);
+			console.log(`Transaction added to transaction pool.`);
 
-			this.transactionPool = [];
+			if(this.transactionPool.length === POOL_MAX){
+				console.log(`Transaction pool contains ${this.transactionPool.length} items. Bigger than ${POOL_MAX}, mining.`);
+				process.env.BREAK = false;
 
-			if(mine !== 'true'){
-				this.addBlock(block);
+				let block = new Block(this.getLastBlock().hash, this.transactionPool);
+				let mine = block.proofWork(process.env.DIFFICULTY);
+
+				this.transactionPool = [];
+
+				if(mine !== 'true'){
+					this.addBlock(block);
+				}
+
 			}
 
 		}
+
+	}
+
+	isTransactionInPool(transaction){
 
 	}
 
@@ -180,15 +189,6 @@ class Blockchain {
 
 			resolve(bal);
 		})
-	}
-
-	// Loops through first block for vote count
-	getVoterCount(publickey){
-		for(let i = 0; i < this.blockchain[0]._data.length; i++){
-			if(publickey === this.blockchain[0]._data[i].receiver){
-				return this.blockchain[0]._data[i].amount;
-			}
-		}
 	}
 }
 

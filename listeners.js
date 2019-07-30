@@ -4,8 +4,10 @@ const Transaction = require('./models/transaction');
 const Blockchain = require('./models/blockchain');
 
 const listeners = (socket, blockchain) => {
-	socket.on(Constants.NEW_TRANSACTION, (sender, receiver, amount, privateKey) => {
-		const transaction = new Transaction(sender, receiver, amount, privateKey);
+	socket.on(Constants.NEW_TRANSACTION, (t) => {
+		//const transaction = new Transaction(sender, receiver, amount, privateKey);
+
+		let transaction = new Transaction(null, null, null, null, t);
 		blockchain.newTransaction(transaction);
 		console.log(`Transaction recieved.`)
 	});

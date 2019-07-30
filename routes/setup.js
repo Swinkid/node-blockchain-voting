@@ -188,7 +188,8 @@ function writeQR(keys){
 
 function sendEmit(io, identityManager, key){
 	return new Promise(resolve => {
-		io.emit(Constants.NEW_TRANSACTION, identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+		let transaction = new Transaction( identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
+		io.emit(Constants.NEW_TRANSACTION, transaction);
 	})
 }
 
