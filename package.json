@@ -13,7 +13,9 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/coverage/"
+      "/coverage/",
+      "/echosystem.config.js",
+      "master.config.js"
     ],
     "collectCoverage": true,
     "collectCoverageFrom": ["**/*.js", "**/*.ejs"]
