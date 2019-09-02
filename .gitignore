@@ -72,3 +72,4 @@ node_keys/*.png
 tmp/
 tmp/*
 /test.png
+/oldKeys/
