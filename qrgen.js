@@ -31,7 +31,7 @@ process.on('message', message => {
 				});
 
 				fs.unlink(`${__dirname}/node_keys/voterkeys/${keyIndex}.pem`, function (error) {
-					
+
 				});
 
 				keyIndex++;
@@ -42,15 +42,5 @@ process.on('message', message => {
 
 		//TODO Delete pem
 	});
-
-
-
-	// message.keys.forEach((key) => {
-	// 	QRCode.toFile(`${message.base}/node_keys/${message.index}.png`, key, function (err) {
-	// 		console.log(err);
-	// 	});
-	//
-	// 	k++;
-	// });
 
 });

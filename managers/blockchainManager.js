@@ -15,8 +15,6 @@ const BlockchainManager = (io, app) => {
 	//Setup Blockchain (Don't Initialize yet..)
 	const blockchain = new Blockchain(io);
 
-	app.test = "meow";
-
 	const identityManager = new IdentityManger();
 	const setupRoute = require('../routes/setup')(app, blockchain, identityManager, io);
 

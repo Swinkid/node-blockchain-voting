@@ -6,7 +6,17 @@
     "--inspect"
   ],
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": ["**/*.js", "**/*.ejs"]
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -22,10 +32,12 @@
     "merkle": "^0.6.0",
     "morgan": "~1.9.1",
     "multer": "^1.4.1",
-    "qr-image": "^3.2.0",
     "qrcode": "^1.4.0",
     "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0",
-    "workerpool": "^3.1.2"
+    "socket.io-client": "^2.2.0"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   }
 }
