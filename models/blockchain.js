@@ -13,46 +13,87 @@ class Blockchain {
 		this.socket = socket;
 	}
 
+	/**
+	 * Create blockchain from String
+	 * @param blocks
+	 */
 	parseChain(blocks) {
 		this.blockchain = blocks.map(block => {
 			return new Block(null, null, block);
 		});
 	}
 
+	/**
+	 * Initialize empty blockchain
+	 * @param blockchain
+	 */
 	initialize(blockchain){
 		this.blockchain = blockchain || [];
 		this.transactionPool = [];
 	}
 
+	/**
+	 * Check if blockchain is initalized
+	 * @returns {boolean}
+	 */
 	isInitialized(){
 		return !!this.blockchain;
 	}
 
+	/**
+	 * Add block to chain
+	 * @param block
+	 */
 	addBlock(block){
 		this.blockchain.push(block);
 		this.socket.emit(constants.STOP_WORK, this.blockchain);
 	}
 
+	/**
+	 * Return last block of chain
+	 * @returns {*}
+	 */
 	getLastBlock(){
 		return this.blockchain[this.blockchain.length - 1];
 	}
 
+	/**
+	 * Return blockchain length
+	 * @returns {*}
+	 */
 	getChainLength(){
 		return this.blockchain.length;
 	}
 
+	/**
+	 * Set blockchain array
+	 * @param chain
+	 */
 	setChain(chain){
 		this.blockchain = chain;
 	}
 
+	/**
+	 * Add node
+	 * @param node
+	 */
 	addNode(node){
 		this.nodes.push(node);
 	}
 
+	/**
+	 * Get chain
+	 * @returns {*}
+	 */
 	getChain(){
 		return this.blockchain;
 	}
 
+	/**
+	 * Remove Node
+	 * @param host
+	 * @param port
+	 */
 	removeNode(host, port){
 		for(var i = 0; i < this.nodes.length; i++){
 			if(this.nodes[i].host === host  && this.nodes[i].port === port){
@@ -61,6 +102,11 @@ class Blockchain {
 		}
 	}
 
+	/**
+	 * Get Node
+	 * @param host
+	 * @param port
+	 */
 	getNode(host, port){
 		this.nodes.forEach(function (node) {
 			if(node.host === host && node.port === port){
@@ -69,6 +115,11 @@ class Blockchain {
 		});
 	}
 
+	/**
+	 * Remove node at index
+	 * @param host
+	 * @param port
+	 */
 	getNodeIndex(host, port){
 		let index = 0;
 		this.nodes.forEach(function (node) {
@@ -80,14 +131,27 @@ class Blockchain {
 		});
 	}
 
+	/**
+	 * Return node array
+	 * @returns {[]|Array}
+	 */
 	getNodes(){
 		return this.nodes;
 	}
 
+	/**
+	 * Set Node array
+	 * @param nodes
+	 */
 	setNodes(nodes){
 		this.nodes = nodes;
 	}
 
+	/**
+	 * Add new transaction
+	 * @param transaction
+	 * @returns {Promise<void>}
+	 */
 	async newTransaction(transaction){
 
 		if(transaction.verifyTransaction()){
@@ -114,10 +178,11 @@ class Blockchain {
 
 	}
 
-	isTransactionInPool(transaction){
-
-	}
-
+	/**
+	 * Validate chain integrity
+	 * @param difficulty
+	 * @returns {boolean}
+	 */
 	validateChain(difficulty){
 		let previousBlock = null;
 
@@ -147,15 +212,32 @@ class Blockchain {
 		return true;
 	}
 
+	/**
+	 * Validate Previous Block's Hash
+	 * @param current
+	 * @param previous
+	 * @returns {boolean}
+	 */
 	static validatePreviousHash(current, previous){
 		return current.previousHash() === previous.hash;
 	}
 
+	/**
+	 * Check proof is correct
+	 * @param block
+	 * @param difficulty
+	 * @returns {boolean}
+	 */
 	static checkProof(block, difficulty){
 		let target = StringUtils.getProofString(difficulty);
 		return block.hash.substring(0, difficulty) === target;
 	}
 
+	/**
+	 * Validate block hash
+	 * @param currentBlock
+	 * @returns {boolean}
+	 */
 	static compareHash(currentBlock) {
 		let hash = currentBlock.hash;
 		let compare = currentBlock.calculateHash();
@@ -163,6 +245,11 @@ class Blockchain {
 		return hash === compare;
 	}
 
+	/**
+	 * Return balance of specific key
+	 * @param publickey
+	 * @returns {Promise<unknown>}
+	 */
 	getBalance(publickey){
 		return new Promise(resolve => {
 			let bal = 0;

@@ -16,6 +16,11 @@ class Transaction {
 		}
 	}
 
+	/**
+	 * Sign a transaction
+	 * @param privateKey
+	 * @returns {Buffer | string | number | PromiseLike<ArrayBuffer>}
+	 */
 	signTransactions(privateKey){
 		let key = new ECKey(privateKey, 'pkcs8');
 		let signData = `${this.sender}${this.receiver}${this.amount}`;
@@ -23,6 +28,10 @@ class Transaction {
 		return key.createSign('SHA256').update(signData).sign('base64');
 	}
 
+	/**
+	 * Verify a transaction
+	 * @returns {Buffer | boolean | PromiseLike<boolean>}
+	 */
 	verifyTransaction(){
 		let key = new ECKey(this.sender, 'spki');
 		let signData = `${this.sender}${this.receiver}${this.amount}`;
@@ -30,6 +39,10 @@ class Transaction {
 		return key.createVerify('SHA256').update(signData).verify(this.signature, 'base64');
 	}
 
+	/**
+	 * Calculate transaction hash
+	 * @returns {string}
+	 */
 	calculateHash(){
 		return StringUtil.encodeSha256(
 			this.sender +
@@ -38,6 +51,10 @@ class Transaction {
 		);
 	}
 
+	/**
+	 * Convert transaction from string
+	 * @param transaction
+	 */
 	parseTransaction(transaction) {
 		this.sender = transaction.sender;
 		this.receiver = transaction.receiver;

@@ -11,6 +11,10 @@ class IdentityManager {
 		this._privateKey = null;
 	}
 
+	/**
+	 * Initialize Keys
+	 * If keys exist in FS, Intalize. Else, Generate New Keys
+	 */
 	initializeKeys(){
 		if(this.keysExist()){
 			let privatePem = fs.readFileSync(PRIVATE_KEY);
@@ -30,6 +34,10 @@ class IdentityManager {
 		}
 	}
 
+	/**
+	 * Initialize keys from existing key
+	 * @param priv
+	 */
 	initializeClientKeys(priv){
 		this._privateKey = new ECKey(priv, 'pem');
 		this._publicKey = this._privateKey.asPublicECKey();
@@ -48,7 +56,7 @@ class IdentityManager {
 	}
 
 	/**
-	 *
+	 * Saves key to filesystem
 	 * @param key
 	 * @param filename
 	 */
@@ -62,11 +70,18 @@ class IdentityManager {
 		});
 	}
 
-
+	/**
+	 * Return Public Key
+	 * @returns {string}
+	 */
 	getPublicKey(){
 		return this._publicKey.toString('spki');
 	}
 
+	/**
+	 * Return Private Key
+	 * @returns {string}
+	 */
 	getPrivateKey(){
 		return this._privateKey.toString('pkcs8');
 	}

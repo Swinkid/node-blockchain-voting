@@ -5,6 +5,12 @@ const Transaction = require('./transaction');
 
 class Block {
 
+	/**
+	 * Block Constructor
+	 * @param previousHash
+	 * @param data
+	 * @param block
+	 */
 	constructor(previousHash, data, block){
 		if(block !== undefined){
 			this.parseBlock(block)
@@ -18,6 +24,10 @@ class Block {
 		}
 	}
 
+	/**
+	 * Covert string based block to object
+	 * @param block
+	 */
 	parseBlock(block) {
 		this._timeStamp = block._timeStamp;
 		this._previousHash = block._previousHash;
@@ -31,6 +41,10 @@ class Block {
 		this._hash = block.hash;
 	}
 
+	/**
+	 * Return Transaction ID's for block
+	 * @returns {[]}
+	 */
 	getTransactionIds(){
 		let transactionIds = [];
 
@@ -41,6 +55,10 @@ class Block {
 		return transactionIds;
 	}
 
+	/**
+	 * Calculate block hash string
+	 * @returns {string}
+	 */
 	calculateHash(){
 		return StringUtils.encodeSha256(
 			this._previousHash +
@@ -51,7 +69,10 @@ class Block {
 		)
 	}
 
-
+	/**
+	 * Proof the block
+	 * @param difficulty
+	 */
 	proofWork(difficulty){
 		new Promise((resolve) => {
 			setImmediate(async () => {
@@ -69,44 +90,66 @@ class Block {
 		});
 	}
 
-	//proofWork(difficulty){
-	//	let target = StringUtils.getProofString(difficulty);
-	//
-	//	while(this._hash.substring(0, difficulty) !== target){
-	//		this._nonce = parseInt(this._nonce) + 1;
-	//		this._hash = this.calculateHash();
-	//	}
-	//
-	//}
-
+	/**
+	 * Return previous hash
+	 * @returns {*}
+	 */
 	get previousHash() {
 		return this._previousHash;
 	}
 
+	/**
+	 * Set previous hash
+	 * @param value
+	 */
 	set previousHash(value) {
 		this._previousHash = value;
 	}
 
+	/**
+	 * Get data
+	 * @returns {*}
+	 */
 	get data() {
 		return this._data;
 	}
 
+	/**
+	 * Set Data
+	 * @param value
+	 */
 	set data(value) {
 		this._data = value;
 	}
 
+	/**
+	 * Get Block Timestamp
+	 * @returns {number}
+	 */
 	get timeStamp() {
 		return this._timeStamp;
 	}
 
+	/**
+	 * Set timestamp
+	 * @param value
+	 */
 	set timeStamp(value) {
 		this._timeStamp = value;
 	}
 
+	/**
+	 * Get Hash
+	 * @returns {*}
+	 */
 	get hash() {
 		return this._hash;
 	}
 
+	/**
+	 * Set hash
+	 * @param value
+	 */
 	set hash(value) {
 		this._hash = value;
 	}

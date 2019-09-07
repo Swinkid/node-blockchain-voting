@@ -20,6 +20,14 @@ const upload = multer({
 	dest: './tmp/'
 });
 
+/**
+ *
+ * @param app
+ * @param blockchain
+ * @param identityManager
+ * @param io
+ * @constructor
+ */
 const SetupRoute = (app, blockchain, identityManager, io) => {
 
 	app.get('/setup/master', function(req, res, next) {
@@ -60,10 +68,16 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			});
 	});
 
+	/**
+	 * Setup client route
+	 */
 	app.get('/setup/client', function (req, res, next) {
 		res.render('setup/client');
 	});
 
+	/**
+	 * Setup client route
+	 */
 	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
 		let {MASTER_HOST, MASTER_PORT } = process.env;
 		const {candidateCount} = req.body;
@@ -101,6 +115,9 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 		});
 	});
 
+	/**
+	 * Generate QR Codes
+	 */
 	app.get('/setup/client/qr', function (req, res, next) {
 
 		const { fork } = require('child_process');
@@ -114,11 +131,19 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 	});
 
+	/**
+	 * Setup route
+	 */
 	app.get('/setup', function (req, res, next) {
 		res.render('')
 	})
 };
 
+/**
+ * Generate Candidate Keys
+ * @param candidateCount
+ * @returns {Promise<unknown>}
+ */
 function generateCandidateKeys(candidateCount){
 	return new Promise(resolve => {
 		for(let candidates = 0; candidates < candidateCount; candidates++){
@@ -133,6 +158,13 @@ function generateCandidateKeys(candidateCount){
 	});
 }
 
+/**
+ * Setup Transaction
+ * @param amount
+ * @param io
+ * @param identityManager
+ * @returns {Promise<unknown>}
+ */
 function setupTransaction(amount, io, identityManager){
 	return new Promise(resolve => {
 		setImmediate(() => {
@@ -186,6 +218,13 @@ function writeQR(keys){
 	})
 }
 
+/**
+ * Broadcast Transaction to Nodes
+ * @param io
+ * @param identityManager
+ * @param key
+ * @returns {Promise<unknown>}
+ */
 function sendEmit(io, identityManager, key){
 	return new Promise(resolve => {
 		let transaction = new Transaction( identityManager.getPublicKey(), key.asPublicECKey().toString('spki'), 1, identityManager.getPrivateKey());
