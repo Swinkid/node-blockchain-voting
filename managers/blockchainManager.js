@@ -10,6 +10,12 @@ const Constants = require('../constants');
 
 const { PORT, HOST, MASTER_HOST, MASTER_PORT } = process.env;
 
+/**
+ * BlochchainManager. Handles functions relating to the blockchain.
+ * @param io
+ * @param app
+ * @constructor
+ */
 const BlockchainManager = (io, app) => {
 
 	//Setup Blockchain (Don't Initialize yet..)
@@ -67,6 +73,9 @@ const BlockchainManager = (io, app) => {
 
 	}
 
+	/**
+	 * Go to stats if blockchain initialized
+	 */
 	app.get('/', function(req, res, next) {
 		if(blockchain.isInitialized()){
 			res.redirect('/stats')
@@ -75,6 +84,9 @@ const BlockchainManager = (io, app) => {
 		}
 	});
 
+	/**
+	 * Handles adding transaction to pool
+	 */
 	app.post('/transaction', function(req, res, next) {
 		const {sender, reciever, privateKey} = req.body;
 
@@ -85,11 +97,17 @@ const BlockchainManager = (io, app) => {
 		res.json({status: 'Ok'}).end();
 	});
 
+	/**
+	 * Handle stats page
+	 */
 	app.get('/stats', function (req, res, next) {
 		//TODO FIX CHAIN VALIDATION
 		res.render('stats', { blockchain: blockchain, nodes: blockchain.getNodes()});
 	});
 
+	/**
+	 * Return list of nodes
+	 */
 	app.get('/nodes', (req, res) => {
 		var nodes = [];
 
@@ -108,10 +126,16 @@ const BlockchainManager = (io, app) => {
 		console.log(blockchain.isInitialized());
 	});
 
+	/**
+	 * Return blockchain
+	 */
 	app.get('/blockchain', (req, res) => {
 		return res.json(blockchain.getChain());
 	});
 
+	/**
+	 * Check users balance
+	 */
 	app.post('/transaction/user', (req, res) => {
 		const {publicKey} = req.body;
 
@@ -128,6 +152,9 @@ const BlockchainManager = (io, app) => {
 		});
 	});
 
+	/**
+	 * Add new node
+	 */
 	app.post('/nodes', (req, res) => {
 		const { host, port } = req.body;
 		let node = `http://${host}:${port}`;
@@ -171,6 +198,13 @@ const BlockchainManager = (io, app) => {
 	}), blockchain), HOST, PORT));
 };
 
+/**
+ * Check if node exists
+ * @param blockchain
+ * @param host
+ * @param port
+ * @returns {boolean}
+ */
 function nodeExists(blockchain, host, port){
 	let nodes = blockchain.getNodes();
 
