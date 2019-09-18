@@ -30,8 +30,7 @@ const BlockchainManager = (io, app) => {
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
 			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
 			const socketNode = socketListeners(client(node, {
-				'reconnection' : RECONNECT,
-				'pingTimeout' : 25000
+				'reconnection' : RECONNECT
 			}), blockchain);
 
 			blockchain.addNode(new Node(socketNode, MASTER_HOST, MASTER_PORT));
@@ -53,8 +52,7 @@ const BlockchainManager = (io, app) => {
 
 						if(!nodeExists(blockchain, n, p)) {
 							blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${n}:${p}`, {
-								'reconnection' : RECONNECT,
-								'pingTimeout' : 25000
+								'reconnection' : RECONNECT
 							}), blockchain), n, p));
 
 							axios.post(`http://${n}:${p}/nodes`, {
@@ -165,8 +163,7 @@ const BlockchainManager = (io, app) => {
 
 		if(!nodeExists(blockchain, host, port)) {
 			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`, {
-				'reconnection' : RECONNECT,
-				'pingTimeout' : 25000
+				'reconnection' : RECONNECT
 			}), blockchain), host, port));
 
 			console.info(`Added node ${node}`);
@@ -199,8 +196,7 @@ const BlockchainManager = (io, app) => {
 	});
 
 	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`, {
-		'reconnection' : RECONNECT,
-		'pingTimeout' : 25000
+		'reconnection' : RECONNECT
 	}), blockchain), HOST, PORT));
 };
 
