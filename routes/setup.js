@@ -34,7 +34,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 		return res.render('setup/master');
 	});
 
-	app.post('/setup/master', upload.single('file'), function (req, res, next) {
+	app.post('/setup/master', upload.single('file'), (req, res, next) => {
 		const {candidateCount} = req.body;
 
 		identityManager.initializeKeys();
@@ -69,14 +69,14 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 	/**
 	 * Setup client route
 	 */
-	app.get('/setup/client', function (req, res, next) {
+	app.get('/setup/client', (req, res, next) => {
 		return res.render('setup/client');
 	});
 
 	/**
 	 * Setup client route
 	 */
-	app.post('/setup/client', upload.array('file', 2), function (req, res, next) {
+	app.post('/setup/client', upload.array('file', 2), (req, res, next) => {
 		let {MASTER_HOST, MASTER_PORT } = process.env;
 		const {candidateCount} = req.body;
 

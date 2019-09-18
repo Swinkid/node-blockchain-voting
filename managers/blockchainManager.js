@@ -28,7 +28,7 @@ const BlockchainManager = (io, app) => {
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
 			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
 			const socketNode = socketListeners(client(node, {
-				'reconnection' : true
+				'reconnection' : false
 			}), blockchain);
 
 			blockchain.addNode(new Node(socketNode, MASTER_HOST, MASTER_PORT));
@@ -50,7 +50,7 @@ const BlockchainManager = (io, app) => {
 
 						if(!nodeExists(blockchain, n, p)) {
 							blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${n}:${p}`, {
-								'reconnection' : true
+								'reconnection' : false
 							}), blockchain), n, p));
 
 							axios.post(`http://${n}:${p}/nodes`, {
@@ -76,7 +76,7 @@ const BlockchainManager = (io, app) => {
 	/**
 	 * Go to stats if blockchain initialized
 	 */
-	app.get('/', function(req, res, next) {
+	app.get('/', (req, res, next) => {
 		if(blockchain.isInitialized()){
 			return res.redirect('/stats');
 		} else {
@@ -87,7 +87,7 @@ const BlockchainManager = (io, app) => {
 	/**
 	 * Handles adding transaction to pool
 	 */
-	app.post('/transaction', function(req, res, next) {
+	app.post('/transaction', (req, res, next) => {
 		const {sender, reciever, privateKey} = req.body;
 
 		const transaction = new Transaction(sender, reciever, 1, privateKey);
@@ -100,7 +100,7 @@ const BlockchainManager = (io, app) => {
 	/**
 	 * Handle stats page
 	 */
-	app.get('/stats', function (req, res, next) {
+	app.get('/stats',  (req, res, next) => {
 		//TODO FIX CHAIN VALIDATION
 		return res.render('stats', { blockchain: blockchain, nodes: blockchain.getNodes()});
 	});
@@ -161,7 +161,7 @@ const BlockchainManager = (io, app) => {
 
 		if(!nodeExists(blockchain, host, port)) {
 			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`, {
-				'reconnection' : true
+				'reconnection' : false
 			}), blockchain), host, port));
 
 			console.info(`Added node ${node}`);
@@ -194,7 +194,7 @@ const BlockchainManager = (io, app) => {
 	});
 
 	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`, {
-		'reconnection' : true
+		'reconnection' : false
 	}), blockchain), HOST, PORT));
 };
 
