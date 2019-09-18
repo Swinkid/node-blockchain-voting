@@ -31,7 +31,7 @@ const upload = multer({
 const SetupRoute = (app, blockchain, identityManager, io) => {
 
 	app.get('/setup/master', function(req, res, next) {
-		res.render('setup/master');
+		return res.render('setup/master');
 	});
 
 	app.post('/setup/master', upload.single('file'), function (req, res, next) {
@@ -70,7 +70,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 	 * Setup client route
 	 */
 	app.get('/setup/client', function (req, res, next) {
-		res.render('setup/client');
+		return res.render('setup/client');
 	});
 
 	/**
@@ -127,7 +127,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			message: 'ping'
 		});
 
-		res.json({ message: 'Ok'})
+		return res.json({ message: 'Ok'})
 
 	});
 

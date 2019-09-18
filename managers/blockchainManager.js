@@ -78,9 +78,9 @@ const BlockchainManager = (io, app) => {
 	 */
 	app.get('/', function(req, res, next) {
 		if(blockchain.isInitialized()){
-			res.redirect('/stats')
+			return res.redirect('/stats');
 		} else {
-			res.redirect('/setup')
+			return res.redirect('/setup');
 		}
 	});
 
@@ -94,7 +94,7 @@ const BlockchainManager = (io, app) => {
 		io.emit(Constants.NEW_TRANSACTION, transaction);
 
 		//io.emit(Constants.NEW_TRANSACTION, sender, reciever, 1, privateKey);
-		res.json({status: 'Ok'}).end();
+		return res.json({status: 'Ok'});
 	});
 
 	/**
@@ -102,7 +102,7 @@ const BlockchainManager = (io, app) => {
 	 */
 	app.get('/stats', function (req, res, next) {
 		//TODO FIX CHAIN VALIDATION
-		res.render('stats', { blockchain: blockchain, nodes: blockchain.getNodes()});
+		return res.render('stats', { blockchain: blockchain, nodes: blockchain.getNodes()});
 	});
 
 	/**
@@ -166,13 +166,13 @@ const BlockchainManager = (io, app) => {
 
 			console.info(`Added node ${node}`);
 
-			res.json({
+			return res.json({
 				status: 'Added node'
-			}).end();
+			});
 		} else {
-			res.json({
+			return res.json({
 				status: 'Rejected Node'
-			}).end();
+			})
 		}
 
 	});
