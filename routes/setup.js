@@ -44,8 +44,6 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 		let chain = [];
 		let transactions = [];
 
-		generateCandidateKeys(candidateCount);
-
 		fs.createReadStream(req.file.path)
 			.pipe(csv())
 			.on('data', (row) => {
@@ -64,7 +62,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 				blockchain.initialize(chain);
 
-				res.redirect('/');
+				return res.redirect('/');
 			});
 	});
 
@@ -108,6 +106,8 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 
 				});
 			});
+
+			return res.redirect('/');
 
 		}).catch(function (error) {
 			console.log(error);
