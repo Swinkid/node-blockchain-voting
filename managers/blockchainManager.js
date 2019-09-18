@@ -10,6 +10,8 @@ const Constants = require('../constants');
 
 const { PORT, HOST, MASTER_HOST, MASTER_PORT } = process.env;
 
+const RECONNECT = false;
+
 /**
  * BlochchainManager. Handles functions relating to the blockchain.
  * @param io
@@ -28,7 +30,7 @@ const BlockchainManager = (io, app) => {
 		if(!nodeExists(blockchain, MASTER_HOST, MASTER_PORT)){
 			const node = `http://${MASTER_HOST}:${MASTER_PORT}?cbaddr=${HOST}:${PORT}`;
 			const socketNode = socketListeners(client(node, {
-				'reconnection' : false,
+				'reconnection' : RECONNECT,
 				'pingTimeout' : 25000
 			}), blockchain);
 
@@ -51,7 +53,7 @@ const BlockchainManager = (io, app) => {
 
 						if(!nodeExists(blockchain, n, p)) {
 							blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${n}:${p}`, {
-								'reconnection' : false,
+								'reconnection' : RECONNECT,
 								'pingTimeout' : 25000
 							}), blockchain), n, p));
 
@@ -163,7 +165,7 @@ const BlockchainManager = (io, app) => {
 
 		if(!nodeExists(blockchain, host, port)) {
 			blockchain.addNode(new Node(socketListeners(client(node + `?cbaddr=${HOST}:${PORT}`, {
-				'reconnection' : false,
+				'reconnection' : RECONNECT,
 				'pingTimeout' : 25000
 			}), blockchain), host, port));
 
@@ -197,7 +199,7 @@ const BlockchainManager = (io, app) => {
 	});
 
 	blockchain.addNode(new Node(socketListeners(client(`http://${HOST}:${PORT}?cbaddr=${HOST}:${PORT}`, {
-		'reconnection' : false,
+		'reconnection' : RECONNECT,
 		'pingTimeout' : 25000
 	}), blockchain), HOST, PORT));
 };
