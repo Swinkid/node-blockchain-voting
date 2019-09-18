@@ -29,7 +29,6 @@ var io = app.io;
 io.attach(server, {
   pingTimeout: 60000,
   pingInterval: 1000,
-  transports: ['websocket'],
   maxHttpBufferSize: 100E7
 });
 
