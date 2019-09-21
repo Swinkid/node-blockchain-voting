@@ -60,7 +60,7 @@ process.on('message', message => {
 
 				let key = new ECKey(fileContents, 'pem');
 
-				QRCode.toFile(`${__dirname}/node_keys/candidatekeys/c-${keyIndex}.png`, key.toString('spki'), function (err) {
+				QRCode.toFile(`${__dirname}/node_keys/candidatekeys/c-${keyIndex}.png`, key.asPublicECKey().toString('spki'), function (err) {
 
 				});
 
