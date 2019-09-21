@@ -4,6 +4,7 @@ const axios = require('axios');
 const Node = require('../models/node');
 const Blockchain = require('../models/blockchain');
 const IdentityManger = require('../managers/identityManager');
+const Transaction = require('../models/transaction');
 
 const socketListeners = require('../listeners');
 const Constants = require('../constants');
