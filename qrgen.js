@@ -53,18 +53,18 @@ process.on('message', message => {
 
 		let keyIndex = 0;
 		files.forEach((item) => {
-			fs.readFile(`${VOTER_PATH}/${item}`, function (error, fileContents) {
+			fs.readFile(`${CANDIDATE_PATH}/${item}`, function (error, fileContents) {
 				if(error) {
 					console.log(error);
 				}
 
 				let key = new ECKey(fileContents, 'pem');
 
-				QRCode.toFile(`${__dirname}/node_keys/candidatekeys/${keyIndex}.png`, key.toString('spki'), function (err) {
+				QRCode.toFile(`${__dirname}/node_keys/candidatekeys/c-${keyIndex}.png`, key.toString('spki'), function (err) {
 
 				});
 
-				fs.unlink(`${__dirname}/node_keys/candidatekeys/${keyIndex}.pem`, function (error) {
+				fs.unlink(`${__dirname}/node_keys/candidatekeys/c-${keyIndex}.pem`, function (error) {
 
 				});
 
