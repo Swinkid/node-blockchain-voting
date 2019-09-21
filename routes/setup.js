@@ -102,7 +102,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 			let newKeys = [];
 
 			blockchain.getBalance(identityManager.getPublicKey()).then((amount) => {
-				setupTransaction(amount, io, identityManager).then((keys) => {
+				setupTransaction(amount, io, identityManager, candidateCount).then((keys) => {
 
 				});
 			});
@@ -140,35 +140,17 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 };
 
 /**
- * Generate Candidate Keys
- * @param candidateCount
- * @returns {Promise<unknown>}
- */
-function generateCandidateKeys(candidateCount){
-	return new Promise(resolve => {
-		for(let candidates = 0; candidates < candidateCount; candidates++){
-			let key = ECKey.createECKey('P-256');
-
-			// QRCode.toFile(`node_keys/candidate-${candidates}.png`, key.asPublicECKey().toString('pem'), function (err) {
-			// 	//TODO: Handle Error
-			// });
-		}
-
-		resolve();
-	});
-}
-
-/**
  * Setup Transaction
  * @param amount
  * @param io
  * @param identityManager
  * @returns {Promise<unknown>}
  */
-function setupTransaction(amount, io, identityManager){
+function setupTransaction(amount, io, identityManager, candidateAmount){
 	return new Promise(resolve => {
 		setImmediate(() => {
 			let keys = [];
+			let candidateKeys = [];
 
 			for (let voters = 0; voters < amount; voters++) {
 				let key = ECKey.createECKey('P-256');
@@ -177,45 +159,14 @@ function setupTransaction(amount, io, identityManager){
 				sendEmit(io, identityManager, key);
 			}
 
+			for(let candidates = 0; candidates < parseInt(candidateAmount); candidates++){
+				let key = ECKey.createECKey('P-256');
+				identityManager.saveKey(key, `node_keys/candidatekeys/c-${candidates}.pem`);
+			}
+
 			resolve();
 		});
 	});
-}
-
-function writeQR(keys){
-	return new Promise(resolve => {
-
-		let keyString = [];
-		const child = child.fork(`${__basedir}/qrgen.js`);
-
-		keys.forEach((key) => {
-			keyString.push(key.toString(key.toString('pem')));
-		});
-
-		child.send({
-			base: __basedir,
-			keys: keyString
-		}, (err) => {
-			console.log(err);
-		});
-
-		child.on('message', (message) => {
-			if(message === 'complete'){
-				resolve();
-			}
-		})
-
-
-
-		// keys.forEach((key) => {
-		//
-		// 	// QRCode.toFileStream(`${__basedir}/node_keys/${k}.png`, key.toString('pem'), function (err) {}).then((stream) => {
-		// 	//
-		// 	// 	stream.
-		// 	//
-		// 	// });
-		//
-	})
 }
 
 /**

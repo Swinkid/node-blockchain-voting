@@ -4,11 +4,12 @@ const QRCode = require('qrcode');
 const ECKey = require('ec-key');
 
 const EXTENSION = '.pem';
-const PATH = `${__dirname}/node_keys/voterkeys`;
+const VOTER_PATH = `${__dirname}/node_keys/voterkeys`;
+const CANDIDATE_PATH = `${__dirname}/node_keys/candidatekeys`;
 
 process.on('message', message => {
 
-	fs.readdir(PATH, function (error, files) {
+	fs.readdir(VOTER_PATH, function (error, files) {
 		if(error){
 			console.log('error');
 		}
@@ -19,7 +20,7 @@ process.on('message', message => {
 
 		let keyIndex = 0;
 		files.forEach((item) => {
-			fs.readFile(`${PATH}/${item}`, function (error, fileContents) {
+			fs.readFile(`${VOTER_PATH}/${item}`, function (error, fileContents) {
 				if(error) {
 					console.log(error);
 				}
@@ -39,8 +40,39 @@ process.on('message', message => {
 			});
 		});
 
+	});
 
-		//TODO Delete pem
+	fs.readdir(CANDIDATE_PATH, (error, files) => {
+		if(error){
+			console.log(error);
+		}
+
+		files.filter((file) =>{
+			return path.extname(file).toLowerCase() === EXTENSION;
+		});
+
+		let keyIndex = 0;
+		files.forEach((item) => {
+			fs.readFile(`${VOTER_PATH}/${item}`, function (error, fileContents) {
+				if(error) {
+					console.log(error);
+				}
+
+				let key = new ECKey(fileContents, 'pem');
+
+				QRCode.toFile(`${__dirname}/node_keys/candidatekeys/${keyIndex}.png`, key.toString('spki'), function (err) {
+
+				});
+
+				fs.unlink(`${__dirname}/node_keys/candidatekeys/${keyIndex}.pem`, function (error) {
+
+				});
+
+				keyIndex++;
+
+			});
+		});
+
 	});
 
 });
