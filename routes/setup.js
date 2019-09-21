@@ -107,7 +107,7 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 				});
 			});
 
-			return res.redirect('/');
+			return res.redirect('/setup/client/qr');
 
 		}).catch(function (error) {
 			console.log(error);
