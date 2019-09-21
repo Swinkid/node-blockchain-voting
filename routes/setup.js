@@ -149,9 +149,6 @@ const SetupRoute = (app, blockchain, identityManager, io) => {
 function setupTransaction(amount, io, identityManager, candidateAmount){
 	return new Promise(resolve => {
 		setImmediate(() => {
-			let keys = [];
-			let candidateKeys = [];
-
 			for (let voters = 0; voters < amount; voters++) {
 				let key = ECKey.createECKey('P-256');
 
